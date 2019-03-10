@@ -1,0 +1,8 @@
+.vs/
+FolderToPDF/obj/
+PDFToImages/obj/
+*.exe
+*.msi
+*.pdb
+*.config
+*.xml

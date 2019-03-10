@@ -1,0 +1,5 @@
+1. FolderToPDF.exe, PdfSharp.dll 파일을 사용할 폴더에 복사한다.
+2. FolderToPDF.reg 파일을 텍스트 편집기로 연다.
+3. D:\\FolderToPDF.exe 내용을 실제 파일이 있는 경로명으로 변경한다.
+4. 파일을 저장하고 FolderToPDF.reg 파일을 더블클릭하여 레지스트리에 등록한다.
+5. 폴더를 선택하고 오른쪽 버튼을 누르면 메뉴에 Folder To PDF 항목이 추가되어 있고, 기능을 선택하면 pdf 파일들이 생긴다.
