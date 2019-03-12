@@ -4,6 +4,6 @@
     <StartArguments>"C:\Users\sondr\Desktop\새 폴더"</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <StartArguments>"C:\Users\sondr\Desktop\새 폴더"</StartArguments>
+    <StartArguments>4 "C:\Users\sondr\Desktop\새 폴더"</StartArguments>
   </PropertyGroup>
 </Project>

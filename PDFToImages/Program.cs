@@ -6,6 +6,7 @@ using PdfSharp.Pdf.Advanced;
 using PdfSharp.Pdf.IO;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -15,97 +16,106 @@ namespace PDFToImages
 {
     class Program
     {
+        private static string exe_file_name;
         static void Main(string[] args)
         {
-            if(args.Length > 0)
+            if (args.Length > 0)
             {
+                exe_file_name = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
                 PDFToImages(args[0]);
             }
         }
 
         static void PDFToImages(string path)
         {
-            DirectoryInfo d = new DirectoryInfo(path);
-
-            DirectoryInfo[] dirs = d.GetDirectories();
-            foreach (DirectoryInfo dir in dirs)
+            string ext = path.Substring(path.Length - 4, 4).ToLower();
+            if (ext == ".pdf")
             {
-                PDFToImages(dir.FullName);
-            }
-            int current_console_line = 0;
-            FileInfo[] files = d.GetFiles();
-            if (files.Length > 0)
-            {
-                foreach (FileInfo file in files)
+                FileInfo file = new FileInfo(path);
+                int current_console_line = 0;
+                //string current_folder = path + "\\" + Path.GetFileNameWithoutExtension(file.Name);
+                string current_folder = path.Substring(0, path.Length - 4);
+                DirectoryInfo di = new DirectoryInfo(current_folder);
+                int RenderDPI = 96;
+                if (di.Exists == false)
                 {
-                    if (file.Extension.ToLower() == ".pdf")
+                    di.Create();
+                }
+                MuPDF _mupdf;
+                try
+                {
+                    _mupdf = new MuPDF(file.FullName, null);
+                    _mupdf.AntiAlias = true;
+                    Console.Write("Convert PDF : " + file.FullName + "\n");
+                    current_console_line++;
+                    for (int i = 1; i <= _mupdf.PageCount; i++)
                     {
-                        string current_folder = path + "\\" + Path.GetFileNameWithoutExtension(file.Name);
-                        DirectoryInfo di = new DirectoryInfo(current_folder);
-                        int RenderDPI = 96;
-                        if (di.Exists == false)
+                        _mupdf.Page = i;
+                        Bitmap FiratImage = _mupdf.GetBitmap(0, 0, RenderDPI, RenderDPI, 0, RenderType.RGB, false, false, 100000000);
+                        if (FiratImage != null)
                         {
-                            di.Create();
-                            MuPDF _mupdf;
-                            try
-                            {
-                                _mupdf = new MuPDF(file.FullName, null);
-                                _mupdf.AntiAlias = true;
-                                Console.Write("Convert PDF : " + file.FullName + "\n");
-                                current_console_line++;
-                                for (int i=1; i<=_mupdf.PageCount; i++)
-                                {
-                                    _mupdf.Page = i;
-                                    Bitmap FiratImage = _mupdf.GetBitmap(0, 0, RenderDPI, RenderDPI, 0, RenderType.RGB, false, false, 100000000);
-                                    if(FiratImage != null)
-                                    {
-                                        FiratImage.Save(String.Format("{0}\\{1:D4}.jpg", current_folder, i));
-                                    }
-                                    Console.SetCursorPosition(0, current_console_line);
-                                    Console.Write(i.ToString() + " / " + _mupdf.PageCount.ToString());
-                                }
-                                Console.Write("\n");
-                                current_console_line++;
-                            }
-                            catch (Exception e)
-                            {
-                                //throw new Pdf2KTException("Error while opening PDF document.", e);
-                            }
+                            FiratImage.Save(String.Format("{0}\\{1:D4}.jpg", current_folder, i));
+                        }
+                        Console.SetCursorPosition(0, current_console_line);
+                        Console.Write(i.ToString() + " / " + _mupdf.PageCount.ToString());
+                    }
+                    Console.Write("\n");
+                    current_console_line++;
+                }
+                catch (Exception e)
+                {
+                    //throw new Pdf2KTException("Error while opening PDF document.", e);
+                }
 
+                //PdfDocument document = PdfReader.Open(file.FullName);
+                //int imageCount = 0;
+                //// Iterate pages
+                //foreach (PdfPage page in document.Pages)
+                //{
+                //    // Get resources dictionary
+                //    PdfDictionary resources = page.Elements.GetDictionary("/Resources");
+                //    if (resources != null)
+                //    {
+                //        // Get external objects dictionary
+                //        PdfDictionary xObjects = resources.Elements.GetDictionary("/XObject");
+                //        if (xObjects != null)
+                //        {
+                //            ICollection<PdfItem> items = xObjects.Elements.Values;
+                //            // Iterate references to external objects
+                //            foreach (PdfItem item in items)
+                //            {
+                //                PdfReference reference = item as PdfReference;
+                //                if (reference != null)
+                //                {
+                //                    PdfDictionary xObject = reference.Value as PdfDictionary;
+                //                    // Is external object an image?
+                //                    if (xObject != null && xObject.Elements.GetString("/Subtype") == "/Image")
+                //                    {
+                //                        ExportImage(xObject, current_folder, ref imageCount);
+                //                    }
+                //                }
+                //            }
+                //        }
+                //    }
+                //}
+            }
+            else
+            {
+                DirectoryInfo d = new DirectoryInfo(path);
 
-
-
-                            //PdfDocument document = PdfReader.Open(file.FullName);
-                            //int imageCount = 0;
-                            //// Iterate pages
-                            //foreach (PdfPage page in document.Pages)
-                            //{
-                            //    // Get resources dictionary
-                            //    PdfDictionary resources = page.Elements.GetDictionary("/Resources");
-                            //    if (resources != null)
-                            //    {
-                            //        // Get external objects dictionary
-                            //        PdfDictionary xObjects = resources.Elements.GetDictionary("/XObject");
-                            //        if (xObjects != null)
-                            //        {
-                            //            ICollection<PdfItem> items = xObjects.Elements.Values;
-                            //            // Iterate references to external objects
-                            //            foreach (PdfItem item in items)
-                            //            {
-                            //                PdfReference reference = item as PdfReference;
-                            //                if (reference != null)
-                            //                {
-                            //                    PdfDictionary xObject = reference.Value as PdfDictionary;
-                            //                    // Is external object an image?
-                            //                    if (xObject != null && xObject.Elements.GetString("/Subtype") == "/Image")
-                            //                    {
-                            //                        ExportImage(xObject, current_folder, ref imageCount);
-                            //                    }
-                            //                }
-                            //            }
-                            //        }
-                            //    }
-                            //}
+                DirectoryInfo[] dirs = d.GetDirectories();
+                foreach (DirectoryInfo dir in dirs)
+                {
+                    PDFToImages(dir.FullName);
+                }
+                FileInfo[] files = d.GetFiles();
+                if (files.Length > 0)
+                {
+                    foreach (FileInfo file in files)
+                    {
+                        if (file.Extension.ToLower() == ".pdf")
+                        {
+                            Process.Start(@exe_file_name, "\"" + file.FullName + "\"");
                         }
                     }
                 }
@@ -118,7 +128,7 @@ namespace PDFToImages
             //switch (filter)
             //{
             //    case "/DCTDecode":
-                    ExportJpegImage(image, current_folder, ref count);
+            ExportJpegImage(image, current_folder, ref count);
             //        break;
 
             //    case "/FlateDecode":

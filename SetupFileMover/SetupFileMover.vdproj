@@ -1,0 +1,1055 @@
+﻿"DeployProject"
+{
+"VSVersion" = "3:800"
+"ProjectType" = "8:{978C614F-708E-4E1A-B201-565925725DBA}"
+"IsWebType" = "8:FALSE"
+"ProjectName" = "8:SetupFileMover"
+"LanguageId" = "3:1042"
+"CodePage" = "3:949"
+"UILanguageId" = "3:1042"
+"SccProjectName" = "8:"
+"SccLocalPath" = "8:"
+"SccAuxPath" = "8:"
+"SccProvider" = "8:"
+    "Hierarchy"
+    {
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_A48AF1B985624A439652040F1EE0B56B"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+    }
+    "Configurations"
+    {
+        "Debug"
+        {
+        "DisplayName" = "8:Debug"
+        "IsDebugOnly" = "11:TRUE"
+        "IsReleaseOnly" = "11:FALSE"
+        "OutputFilename" = "8:Debug\\SetupFileMover.msi"
+        "PackageFilesAs" = "3:2"
+        "PackageFileSize" = "3:-2147483648"
+        "CabType" = "3:1"
+        "Compression" = "3:2"
+        "SignOutput" = "11:FALSE"
+        "CertificateFile" = "8:"
+        "PrivateKeyFile" = "8:"
+        "TimeStampServer" = "8:"
+        "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
+        }
+        "Release"
+        {
+        "DisplayName" = "8:Release"
+        "IsDebugOnly" = "11:FALSE"
+        "IsReleaseOnly" = "11:TRUE"
+        "OutputFilename" = "8:Release\\SetupFileMover.msi"
+        "PackageFilesAs" = "3:2"
+        "PackageFileSize" = "3:-2147483648"
+        "CabType" = "3:1"
+        "Compression" = "3:2"
+        "SignOutput" = "11:FALSE"
+        "CertificateFile" = "8:"
+        "PrivateKeyFile" = "8:"
+        "TimeStampServer" = "8:"
+        "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.6.1"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.6.1 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.6.1"
+                    }
+                }
+            }
+        }
+    }
+    "Deployable"
+    {
+        "CustomAction"
+        {
+        }
+        "DefaultFeature"
+        {
+        "Name" = "8:DefaultFeature"
+        "Title" = "8:"
+        "Description" = "8:"
+        }
+        "ExternalPersistence"
+        {
+            "LaunchCondition"
+            {
+                "{A06ECF26-33A3-4562-8140-9B0E340D4F24}:_4D542475EB8149008766D4BF87C8A803"
+                {
+                "Name" = "8:.NET Framework"
+                "Message" = "8:[VSDNETMSG]"
+                "FrameworkVersion" = "8:.NETFramework,Version=v4.6.1"
+                "AllowLaterVersions" = "11:FALSE"
+                "InstallUrl" = "8:http://go.microsoft.com/fwlink/?LinkId=671728"
+                }
+            }
+        }
+        "File"
+        {
+        }
+        "FileType"
+        {
+        }
+        "Folder"
+        {
+            "{1525181F-901A-416C-8A58-119130FE478E}:_A54A5D61DC504FBF96F7B312D2D9ED69"
+            {
+            "Name" = "8:#1916"
+            "AlwaysCreate" = "11:FALSE"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Property" = "8:DesktopFolder"
+                "Folders"
+                {
+                }
+            }
+            "{1525181F-901A-416C-8A58-119130FE478E}:_D9E869B7526D44BFA1AC7B57C862FBEF"
+            {
+            "Name" = "8:#1919"
+            "AlwaysCreate" = "11:FALSE"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Property" = "8:ProgramMenuFolder"
+                "Folders"
+                {
+                }
+            }
+            "{3C67513D-01DD-4637-8A68-80971EB9504F}:_E02DE5AEC3AA4F34B39561D4F543F31B"
+            {
+            "DefaultLocation" = "8:[ProgramFiles64Folder][Manufacturer]\\[ProductName]"
+            "Name" = "8:#1925"
+            "AlwaysCreate" = "11:FALSE"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Property" = "8:TARGETDIR"
+                "Folders"
+                {
+                }
+            }
+        }
+        "LaunchCondition"
+        {
+        }
+        "Locator"
+        {
+        }
+        "MsiBootstrapper"
+        {
+        "LangId" = "3:1042"
+        "RequiresElevation" = "11:FALSE"
+        }
+        "Product"
+        {
+        "Name" = "8:Microsoft Visual Studio"
+        "ProductName" = "8:FileMover"
+        "ProductCode" = "8:{E6BC81D0-4236-4C49-AAB8-71E30CDFA2AC}"
+        "PackageCode" = "8:{0D023AC9-0F87-41F9-8DAF-55827D4BEF65}"
+        "UpgradeCode" = "8:{84C1DED7-05AB-4EEA-A9ED-ED19693A02C3}"
+        "AspNetVersion" = "8:4.0.30319.0"
+        "RestartWWWService" = "11:FALSE"
+        "RemovePreviousVersions" = "11:FALSE"
+        "DetectNewerInstalledVersion" = "11:TRUE"
+        "InstallAllUsers" = "11:FALSE"
+        "ProductVersion" = "8:1.0.0"
+        "Manufacturer" = "8:DIGIBOOK"
+        "ARPHELPTELEPHONE" = "8:"
+        "ARPHELPLINK" = "8:"
+        "Title" = "8:FileMover"
+        "Subject" = "8:"
+        "ARPCONTACT" = "8:DIGIBOOK"
+        "Keywords" = "8:"
+        "ARPCOMMENTS" = "8:"
+        "ARPURLINFOABOUT" = "8:"
+        "ARPPRODUCTICON" = "8:"
+        "ARPIconIndex" = "3:0"
+        "SearchPath" = "8:"
+        "UseSystemSearchPath" = "11:TRUE"
+        "TargetPlatform" = "3:1"
+        "PreBuildEvent" = "8:"
+        "PostBuildEvent" = "8:"
+        "RunPostBuildEvent" = "3:0"
+        }
+        "Registry"
+        {
+            "HKLM"
+            {
+                "Keys"
+                {
+                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_0851EA779DE24C49B1ABAC272C7FB5E9"
+                    {
+                    "Name" = "8:SOFTWARE"
+                    "Condition" = "8:"
+                    "AlwaysCreate" = "11:TRUE"
+                    "DeleteAtUninstall" = "11:FALSE"
+                    "Transitive" = "11:FALSE"
+                        "Keys"
+                        {
+                            "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_83D3E5C158EF4EC79A65EE0F8D1060FC"
+                            {
+                            "Name" = "8:Microsoft"
+                            "Condition" = "8:"
+                            "AlwaysCreate" = "11:TRUE"
+                            "DeleteAtUninstall" = "11:FALSE"
+                            "Transitive" = "11:FALSE"
+                                "Keys"
+                                {
+                                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_04C63F2BCE0B477F8634B28DAE7A4D67"
+                                    {
+                                    "Name" = "8:Windows"
+                                    "Condition" = "8:"
+                                    "AlwaysCreate" = "11:TRUE"
+                                    "DeleteAtUninstall" = "11:FALSE"
+                                    "Transitive" = "11:FALSE"
+                                        "Keys"
+                                        {
+                                            "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_0AE041F95193472591A3DAEA01F4421B"
+                                            {
+                                            "Name" = "8:CurrentVersion"
+                                            "Condition" = "8:"
+                                            "AlwaysCreate" = "11:TRUE"
+                                            "DeleteAtUninstall" = "11:FALSE"
+                                            "Transitive" = "11:FALSE"
+                                                "Keys"
+                                                {
+                                                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_D496A702D1C24F26878C3D9D127CF96F"
+                                                    {
+                                                    "Name" = "8:Explorer"
+                                                    "Condition" = "8:"
+                                                    "AlwaysCreate" = "11:TRUE"
+                                                    "DeleteAtUninstall" = "11:FALSE"
+                                                    "Transitive" = "11:FALSE"
+                                                        "Keys"
+                                                        {
+                                                            "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_5331FEE14B6B4520A600EFF501E42001"
+                                                            {
+                                                            "Name" = "8:CommandStore"
+                                                            "Condition" = "8:"
+                                                            "AlwaysCreate" = "11:TRUE"
+                                                            "DeleteAtUninstall" = "11:FALSE"
+                                                            "Transitive" = "11:FALSE"
+                                                                "Keys"
+                                                                {
+                                                                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_F62BF19FCECC4F9289E9263CCE980D51"
+                                                                    {
+                                                                    "Name" = "8:shell"
+                                                                    "Condition" = "8:"
+                                                                    "AlwaysCreate" = "11:TRUE"
+                                                                    "DeleteAtUninstall" = "11:FALSE"
+                                                                    "Transitive" = "11:FALSE"
+                                                                        "Keys"
+                                                                        {
+                                                                            "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_91B801379194478E9D34579C42888B08"
+                                                                            {
+                                                                            "Name" = "8:DIGI_CMD4"
+                                                                            "Condition" = "8:"
+                                                                            "AlwaysCreate" = "11:FALSE"
+                                                                            "DeleteAtUninstall" = "11:FALSE"
+                                                                            "Transitive" = "11:FALSE"
+                                                                                "Keys"
+                                                                                {
+                                                                                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_3F1E5415ADA0456491736DA88EC3EE16"
+                                                                                    {
+                                                                                    "Name" = "8:command"
+                                                                                    "Condition" = "8:"
+                                                                                    "AlwaysCreate" = "11:FALSE"
+                                                                                    "DeleteAtUninstall" = "11:FALSE"
+                                                                                    "Transitive" = "11:FALSE"
+                                                                                        "Keys"
+                                                                                        {
+                                                                                        }
+                                                                                        "Values"
+                                                                                        {
+                                                                                            "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_DD1ED90847A349099FF050C4C887109B"
+                                                                                            {
+                                                                                            "Name" = "8:"
+                                                                                            "Condition" = "8:"
+                                                                                            "Transitive" = "11:FALSE"
+                                                                                            "ValueTypes" = "3:1"
+                                                                                            "Value" = "8:[TARGETDIR]FileMover.exe 4 \"%1\""
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                                "Values"
+                                                                                {
+                                                                                    "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_95A7F93971524532A6C69BAEDB392919"
+                                                                                    {
+                                                                                    "Name" = "8:"
+                                                                                    "Condition" = "8:"
+                                                                                    "Transitive" = "11:FALSE"
+                                                                                    "ValueTypes" = "3:1"
+                                                                                    "Value" = "8:4. JPG@Folder"
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                            "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_D421576BD2A0460A95A4099839A2BC95"
+                                                                            {
+                                                                            "Name" = "8:DIGI_CMD2"
+                                                                            "Condition" = "8:"
+                                                                            "AlwaysCreate" = "11:FALSE"
+                                                                            "DeleteAtUninstall" = "11:FALSE"
+                                                                            "Transitive" = "11:FALSE"
+                                                                                "Keys"
+                                                                                {
+                                                                                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_3BDA126C02A549A080201C2ECAD90332"
+                                                                                    {
+                                                                                    "Name" = "8:command"
+                                                                                    "Condition" = "8:"
+                                                                                    "AlwaysCreate" = "11:FALSE"
+                                                                                    "DeleteAtUninstall" = "11:FALSE"
+                                                                                    "Transitive" = "11:FALSE"
+                                                                                        "Keys"
+                                                                                        {
+                                                                                        }
+                                                                                        "Values"
+                                                                                        {
+                                                                                            "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_91BA6756D8464F87896E1ABE62501B35"
+                                                                                            {
+                                                                                            "Name" = "8:"
+                                                                                            "Condition" = "8:"
+                                                                                            "Transitive" = "11:FALSE"
+                                                                                            "ValueTypes" = "3:1"
+                                                                                            "Value" = "8:[TARGETDIR]FileMover.exe 2 \"%1\""
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                                "Values"
+                                                                                {
+                                                                                    "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_CB16AF82814E446AA0F8A2612FDF28A8"
+                                                                                    {
+                                                                                    "Name" = "8:"
+                                                                                    "Condition" = "8:"
+                                                                                    "Transitive" = "11:FALSE"
+                                                                                    "ValueTypes" = "3:1"
+                                                                                    "Value" = "8:2. PDF@Folder"
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                            "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_D9BEF0C073F7484E9486897BFB1B1043"
+                                                                            {
+                                                                            "Name" = "8:DIGI_CMD1"
+                                                                            "Condition" = "8:"
+                                                                            "AlwaysCreate" = "11:FALSE"
+                                                                            "DeleteAtUninstall" = "11:FALSE"
+                                                                            "Transitive" = "11:FALSE"
+                                                                                "Keys"
+                                                                                {
+                                                                                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_E2B31B76B8F84362A85E5C4A0CEC1C5A"
+                                                                                    {
+                                                                                    "Name" = "8:command"
+                                                                                    "Condition" = "8:"
+                                                                                    "AlwaysCreate" = "11:FALSE"
+                                                                                    "DeleteAtUninstall" = "11:FALSE"
+                                                                                    "Transitive" = "11:FALSE"
+                                                                                        "Keys"
+                                                                                        {
+                                                                                        }
+                                                                                        "Values"
+                                                                                        {
+                                                                                            "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_C55B601F39EF4994A5F6F6D7184789F4"
+                                                                                            {
+                                                                                            "Name" = "8:"
+                                                                                            "Condition" = "8:"
+                                                                                            "Transitive" = "11:FALSE"
+                                                                                            "ValueTypes" = "3:1"
+                                                                                            "Value" = "8:[TARGETDIR]FileMover.exe 1 \"%1\""
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                                "Values"
+                                                                                {
+                                                                                    "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_FD1D15AAA89E4CFFAC8443D7BF51AA59"
+                                                                                    {
+                                                                                    "Name" = "8:"
+                                                                                    "Condition" = "8:"
+                                                                                    "Transitive" = "11:FALSE"
+                                                                                    "ValueTypes" = "3:1"
+                                                                                    "Value" = "8:1. Folder@PDF"
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                            "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_EA595972A9794B969C791F83BDDB8DEA"
+                                                                            {
+                                                                            "Name" = "8:DIGI_CMD3"
+                                                                            "Condition" = "8:"
+                                                                            "AlwaysCreate" = "11:FALSE"
+                                                                            "DeleteAtUninstall" = "11:FALSE"
+                                                                            "Transitive" = "11:FALSE"
+                                                                                "Keys"
+                                                                                {
+                                                                                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_5273389F3E0746AE8055A82EAE8CDAB1"
+                                                                                    {
+                                                                                    "Name" = "8:command"
+                                                                                    "Condition" = "8:"
+                                                                                    "AlwaysCreate" = "11:FALSE"
+                                                                                    "DeleteAtUninstall" = "11:FALSE"
+                                                                                    "Transitive" = "11:FALSE"
+                                                                                        "Keys"
+                                                                                        {
+                                                                                        }
+                                                                                        "Values"
+                                                                                        {
+                                                                                            "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_747FF50B203B4A73A541EA2BA11CEEF1"
+                                                                                            {
+                                                                                            "Name" = "8:"
+                                                                                            "Condition" = "8:"
+                                                                                            "Transitive" = "11:FALSE"
+                                                                                            "ValueTypes" = "3:1"
+                                                                                            "Value" = "8:[TARGETDIR]FileMover.exe 3 \"%1\""
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                                "Values"
+                                                                                {
+                                                                                    "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_C2EB3EA5E1FE4770B6AF5CA49CD8143B"
+                                                                                    {
+                                                                                    "Name" = "8:"
+                                                                                    "Condition" = "8:"
+                                                                                    "Transitive" = "11:FALSE"
+                                                                                    "ValueTypes" = "3:1"
+                                                                                    "Value" = "8:3. Folder@JPG"
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                            "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_F82758F549ED41529B205B53B8B8FE74"
+                                                                            {
+                                                                            "Name" = "8:DIGI_CMD5"
+                                                                            "Condition" = "8:"
+                                                                            "AlwaysCreate" = "11:TRUE"
+                                                                            "DeleteAtUninstall" = "11:FALSE"
+                                                                            "Transitive" = "11:FALSE"
+                                                                                "Keys"
+                                                                                {
+                                                                                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_40D7A758D2404E81B58CF550C7CEE388"
+                                                                                    {
+                                                                                    "Name" = "8:command"
+                                                                                    "Condition" = "8:"
+                                                                                    "AlwaysCreate" = "11:TRUE"
+                                                                                    "DeleteAtUninstall" = "11:FALSE"
+                                                                                    "Transitive" = "11:FALSE"
+                                                                                        "Keys"
+                                                                                        {
+                                                                                        }
+                                                                                        "Values"
+                                                                                        {
+                                                                                            "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_82D54C45FB354369B8FDCE195A1B59CE"
+                                                                                            {
+                                                                                            "Name" = "8:"
+                                                                                            "Condition" = "8:"
+                                                                                            "Transitive" = "11:FALSE"
+                                                                                            "ValueTypes" = "3:1"
+                                                                                            "Value" = "8:[TARGETDIR]FileMover.exe 5 \"%1\""
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                                "Values"
+                                                                                {
+                                                                                    "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_8A1E0319B4114F94A0920F76B5DA635E"
+                                                                                    {
+                                                                                    "Name" = "8:"
+                                                                                    "Condition" = "8:"
+                                                                                    "Transitive" = "11:FALSE"
+                                                                                    "ValueTypes" = "3:1"
+                                                                                    "Value" = "8:5. @삭제하기"
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                        "Values"
+                                                                        {
+                                                                        }
+                                                                    }
+                                                                }
+                                                                "Values"
+                                                                {
+                                                                }
+                                                            }
+                                                        }
+                                                        "Values"
+                                                        {
+                                                        }
+                                                    }
+                                                }
+                                                "Values"
+                                                {
+                                                }
+                                            }
+                                        }
+                                        "Values"
+                                        {
+                                        }
+                                    }
+                                }
+                                "Values"
+                                {
+                                }
+                            }
+                        }
+                        "Values"
+                        {
+                        }
+                    }
+                }
+            }
+            "HKCU"
+            {
+                "Keys"
+                {
+                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_BC952F34417A4E608E5D8CC4A91037B4"
+                    {
+                    "Name" = "8:Software"
+                    "Condition" = "8:"
+                    "AlwaysCreate" = "11:FALSE"
+                    "DeleteAtUninstall" = "11:FALSE"
+                    "Transitive" = "11:FALSE"
+                        "Keys"
+                        {
+                            "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_BF8B58D4E9F847B782775FA704F09A95"
+                            {
+                            "Name" = "8:[Manufacturer]"
+                            "Condition" = "8:"
+                            "AlwaysCreate" = "11:FALSE"
+                            "DeleteAtUninstall" = "11:FALSE"
+                            "Transitive" = "11:FALSE"
+                                "Keys"
+                                {
+                                }
+                                "Values"
+                                {
+                                }
+                            }
+                        }
+                        "Values"
+                        {
+                        }
+                    }
+                }
+            }
+            "HKCR"
+            {
+                "Keys"
+                {
+                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_BE38907612554EE38C0CF8AD10EA8A2B"
+                    {
+                    "Name" = "8:Directory"
+                    "Condition" = "8:"
+                    "AlwaysCreate" = "11:FALSE"
+                    "DeleteAtUninstall" = "11:FALSE"
+                    "Transitive" = "11:FALSE"
+                        "Keys"
+                        {
+                            "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_B61A9D6D123C4385A4545AA48D19318C"
+                            {
+                            "Name" = "8:shell"
+                            "Condition" = "8:"
+                            "AlwaysCreate" = "11:FALSE"
+                            "DeleteAtUninstall" = "11:FALSE"
+                            "Transitive" = "11:FALSE"
+                                "Keys"
+                                {
+                                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_B5448A7B27614F6EA3CB1F3AA731A236"
+                                    {
+                                    "Name" = "8:파일명 변환기 (DIGIBOOK)"
+                                    "Condition" = "8:"
+                                    "AlwaysCreate" = "11:FALSE"
+                                    "DeleteAtUninstall" = "11:FALSE"
+                                    "Transitive" = "11:FALSE"
+                                        "Keys"
+                                        {
+                                        }
+                                        "Values"
+                                        {
+                                            "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_C6A03017FF4D4C4BB0478784509F4596"
+                                            {
+                                            "Name" = "8:Subcommands"
+                                            "Condition" = "8:"
+                                            "Transitive" = "11:FALSE"
+                                            "ValueTypes" = "3:1"
+                                            "Value" = "8:DIGI_CMD1;DIGI_CMD2;DIGI_CMD3;DIGI_CMD4;DIGI_CMD5"
+                                            }
+                                        }
+                                    }
+                                }
+                                "Values"
+                                {
+                                }
+                            }
+                        }
+                        "Values"
+                        {
+                        }
+                    }
+                }
+            }
+            "HKU"
+            {
+                "Keys"
+                {
+                }
+            }
+            "HKPU"
+            {
+                "Keys"
+                {
+                }
+            }
+        }
+        "Sequences"
+        {
+        }
+        "Shortcut"
+        {
+        }
+        "UserInterface"
+        {
+            "{DF760B10-853B-4699-99F2-AFF7185B4A62}:_247EAB61F20240558D49520115F8BEE3"
+            {
+            "Name" = "8:#1902"
+            "Sequence" = "3:2"
+            "Attributes" = "3:3"
+                "Dialogs"
+                {
+                    "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_24BCE770BE964849B00CC53218AEEAFA"
+                    {
+                    "Sequence" = "3:100"
+                    "DisplayName" = "8:마침"
+                    "UseDynamicProperties" = "11:TRUE"
+                    "IsDependency" = "11:FALSE"
+                    "SourcePath" = "8:<VsdDialogDir>\\VsdAdminFinishedDlg.wid"
+                        "Properties"
+                        {
+                            "BannerBitmap"
+                            {
+                            "Name" = "8:BannerBitmap"
+                            "DisplayName" = "8:#1001"
+                            "Description" = "8:#1101"
+                            "Type" = "3:8"
+                            "ContextData" = "8:Bitmap"
+                            "Attributes" = "3:4"
+                            "Setting" = "3:1"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                        }
+                    }
+                }
+            }
+            "{DF760B10-853B-4699-99F2-AFF7185B4A62}:_3179F500E60A422C9CE9CCCD087DF77F"
+            {
+            "Name" = "8:#1900"
+            "Sequence" = "3:1"
+            "Attributes" = "3:1"
+                "Dialogs"
+                {
+                    "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_374CBF408A054E9AB1D02DFB0FFE0B50"
+                    {
+                    "Sequence" = "3:200"
+                    "DisplayName" = "8:설치 폴더"
+                    "UseDynamicProperties" = "11:TRUE"
+                    "IsDependency" = "11:FALSE"
+                    "SourcePath" = "8:<VsdDialogDir>\\VsdFolderDlg.wid"
+                        "Properties"
+                        {
+                            "BannerBitmap"
+                            {
+                            "Name" = "8:BannerBitmap"
+                            "DisplayName" = "8:#1001"
+                            "Description" = "8:#1101"
+                            "Type" = "3:8"
+                            "ContextData" = "8:Bitmap"
+                            "Attributes" = "3:4"
+                            "Setting" = "3:1"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                            "InstallAllUsersVisible"
+                            {
+                            "Name" = "8:InstallAllUsersVisible"
+                            "DisplayName" = "8:#1059"
+                            "Description" = "8:#1159"
+                            "Type" = "3:5"
+                            "ContextData" = "8:1;True=1;False=0"
+                            "Attributes" = "3:0"
+                            "Setting" = "3:0"
+                            "Value" = "3:1"
+                            "DefaultValue" = "3:1"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                        }
+                    }
+                    "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_38AABE3C2C1C4233BE40599F6594A2ED"
+                    {
+                    "Sequence" = "3:300"
+                    "DisplayName" = "8:설치 확인"
+                    "UseDynamicProperties" = "11:TRUE"
+                    "IsDependency" = "11:FALSE"
+                    "SourcePath" = "8:<VsdDialogDir>\\VsdConfirmDlg.wid"
+                        "Properties"
+                        {
+                            "BannerBitmap"
+                            {
+                            "Name" = "8:BannerBitmap"
+                            "DisplayName" = "8:#1001"
+                            "Description" = "8:#1101"
+                            "Type" = "3:8"
+                            "ContextData" = "8:Bitmap"
+                            "Attributes" = "3:4"
+                            "Setting" = "3:1"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                        }
+                    }
+                    "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_6D11322B86344FE69BF10CAAF1067BCD"
+                    {
+                    "Sequence" = "3:100"
+                    "DisplayName" = "8:환영"
+                    "UseDynamicProperties" = "11:TRUE"
+                    "IsDependency" = "11:FALSE"
+                    "SourcePath" = "8:<VsdDialogDir>\\VsdWelcomeDlg.wid"
+                        "Properties"
+                        {
+                            "BannerBitmap"
+                            {
+                            "Name" = "8:BannerBitmap"
+                            "DisplayName" = "8:#1001"
+                            "Description" = "8:#1101"
+                            "Type" = "3:8"
+                            "ContextData" = "8:Bitmap"
+                            "Attributes" = "3:4"
+                            "Setting" = "3:1"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                            "CopyrightWarning"
+                            {
+                            "Name" = "8:CopyrightWarning"
+                            "DisplayName" = "8:#1002"
+                            "Description" = "8:#1102"
+                            "Type" = "3:3"
+                            "ContextData" = "8:"
+                            "Attributes" = "3:0"
+                            "Setting" = "3:1"
+                            "Value" = "8:#1202"
+                            "DefaultValue" = "8:#1202"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                            "Welcome"
+                            {
+                            "Name" = "8:Welcome"
+                            "DisplayName" = "8:#1003"
+                            "Description" = "8:#1103"
+                            "Type" = "3:3"
+                            "ContextData" = "8:"
+                            "Attributes" = "3:0"
+                            "Setting" = "3:1"
+                            "Value" = "8:#1203"
+                            "DefaultValue" = "8:#1203"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                        }
+                    }
+                }
+            }
+            "{2479F3F5-0309-486D-8047-8187E2CE5BA0}:_6E1986A699314CD89A471D05DCEA39E5"
+            {
+            "UseDynamicProperties" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "SourcePath" = "8:<VsdDialogDir>\\VsdBasicDialogs.wim"
+            }
+            "{DF760B10-853B-4699-99F2-AFF7185B4A62}:_6F6C3129A0BB4F42B70CC00B24117486"
+            {
+            "Name" = "8:#1900"
+            "Sequence" = "3:2"
+            "Attributes" = "3:1"
+                "Dialogs"
+                {
+                    "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_272086D3BD8041FDAB58DA3E6D40D2BA"
+                    {
+                    "Sequence" = "3:100"
+                    "DisplayName" = "8:환영"
+                    "UseDynamicProperties" = "11:TRUE"
+                    "IsDependency" = "11:FALSE"
+                    "SourcePath" = "8:<VsdDialogDir>\\VsdAdminWelcomeDlg.wid"
+                        "Properties"
+                        {
+                            "BannerBitmap"
+                            {
+                            "Name" = "8:BannerBitmap"
+                            "DisplayName" = "8:#1001"
+                            "Description" = "8:#1101"
+                            "Type" = "3:8"
+                            "ContextData" = "8:Bitmap"
+                            "Attributes" = "3:4"
+                            "Setting" = "3:1"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                            "CopyrightWarning"
+                            {
+                            "Name" = "8:CopyrightWarning"
+                            "DisplayName" = "8:#1002"
+                            "Description" = "8:#1102"
+                            "Type" = "3:3"
+                            "ContextData" = "8:"
+                            "Attributes" = "3:0"
+                            "Setting" = "3:1"
+                            "Value" = "8:#1202"
+                            "DefaultValue" = "8:#1202"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                            "Welcome"
+                            {
+                            "Name" = "8:Welcome"
+                            "DisplayName" = "8:#1003"
+                            "Description" = "8:#1103"
+                            "Type" = "3:3"
+                            "ContextData" = "8:"
+                            "Attributes" = "3:0"
+                            "Setting" = "3:1"
+                            "Value" = "8:#1203"
+                            "DefaultValue" = "8:#1203"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                        }
+                    }
+                    "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_33B76A2D16FF463EB8C84AB8F95AC77D"
+                    {
+                    "Sequence" = "3:300"
+                    "DisplayName" = "8:설치 확인"
+                    "UseDynamicProperties" = "11:TRUE"
+                    "IsDependency" = "11:FALSE"
+                    "SourcePath" = "8:<VsdDialogDir>\\VsdAdminConfirmDlg.wid"
+                        "Properties"
+                        {
+                            "BannerBitmap"
+                            {
+                            "Name" = "8:BannerBitmap"
+                            "DisplayName" = "8:#1001"
+                            "Description" = "8:#1101"
+                            "Type" = "3:8"
+                            "ContextData" = "8:Bitmap"
+                            "Attributes" = "3:4"
+                            "Setting" = "3:1"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                        }
+                    }
+                    "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_5C8761D0BD744497A77FFF206EDE5FCA"
+                    {
+                    "Sequence" = "3:200"
+                    "DisplayName" = "8:설치 폴더"
+                    "UseDynamicProperties" = "11:TRUE"
+                    "IsDependency" = "11:FALSE"
+                    "SourcePath" = "8:<VsdDialogDir>\\VsdAdminFolderDlg.wid"
+                        "Properties"
+                        {
+                            "BannerBitmap"
+                            {
+                            "Name" = "8:BannerBitmap"
+                            "DisplayName" = "8:#1001"
+                            "Description" = "8:#1101"
+                            "Type" = "3:8"
+                            "ContextData" = "8:Bitmap"
+                            "Attributes" = "3:4"
+                            "Setting" = "3:1"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                        }
+                    }
+                }
+            }
+            "{DF760B10-853B-4699-99F2-AFF7185B4A62}:_8FB930CFDD90418E8A9A80A903197A79"
+            {
+            "Name" = "8:#1901"
+            "Sequence" = "3:1"
+            "Attributes" = "3:2"
+                "Dialogs"
+                {
+                    "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_B7E271583CA44391A5587D320F9D1ED4"
+                    {
+                    "Sequence" = "3:100"
+                    "DisplayName" = "8:진행률"
+                    "UseDynamicProperties" = "11:TRUE"
+                    "IsDependency" = "11:FALSE"
+                    "SourcePath" = "8:<VsdDialogDir>\\VsdProgressDlg.wid"
+                        "Properties"
+                        {
+                            "BannerBitmap"
+                            {
+                            "Name" = "8:BannerBitmap"
+                            "DisplayName" = "8:#1001"
+                            "Description" = "8:#1101"
+                            "Type" = "3:8"
+                            "ContextData" = "8:Bitmap"
+                            "Attributes" = "3:4"
+                            "Setting" = "3:1"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                            "ShowProgress"
+                            {
+                            "Name" = "8:ShowProgress"
+                            "DisplayName" = "8:#1009"
+                            "Description" = "8:#1109"
+                            "Type" = "3:5"
+                            "ContextData" = "8:1;True=1;False=0"
+                            "Attributes" = "3:0"
+                            "Setting" = "3:0"
+                            "Value" = "3:1"
+                            "DefaultValue" = "3:1"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                        }
+                    }
+                }
+            }
+            "{DF760B10-853B-4699-99F2-AFF7185B4A62}:_B9B8A440C7DA4AF7A6CF9F5B01C291F8"
+            {
+            "Name" = "8:#1901"
+            "Sequence" = "3:2"
+            "Attributes" = "3:2"
+                "Dialogs"
+                {
+                    "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_DF52865DD1D74B819315AFBA366D5315"
+                    {
+                    "Sequence" = "3:100"
+                    "DisplayName" = "8:진행률"
+                    "UseDynamicProperties" = "11:TRUE"
+                    "IsDependency" = "11:FALSE"
+                    "SourcePath" = "8:<VsdDialogDir>\\VsdAdminProgressDlg.wid"
+                        "Properties"
+                        {
+                            "BannerBitmap"
+                            {
+                            "Name" = "8:BannerBitmap"
+                            "DisplayName" = "8:#1001"
+                            "Description" = "8:#1101"
+                            "Type" = "3:8"
+                            "ContextData" = "8:Bitmap"
+                            "Attributes" = "3:4"
+                            "Setting" = "3:1"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                            "ShowProgress"
+                            {
+                            "Name" = "8:ShowProgress"
+                            "DisplayName" = "8:#1009"
+                            "Description" = "8:#1109"
+                            "Type" = "3:5"
+                            "ContextData" = "8:1;True=1;False=0"
+                            "Attributes" = "3:0"
+                            "Setting" = "3:0"
+                            "Value" = "3:1"
+                            "DefaultValue" = "3:1"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                        }
+                    }
+                }
+            }
+            "{2479F3F5-0309-486D-8047-8187E2CE5BA0}:_E063D82786EA476BA93FCC5D9CD6395F"
+            {
+            "UseDynamicProperties" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "SourcePath" = "8:<VsdDialogDir>\\VsdUserInterface.wim"
+            }
+            "{DF760B10-853B-4699-99F2-AFF7185B4A62}:_E939391EE9E24E9890D2DA9B85915ADF"
+            {
+            "Name" = "8:#1902"
+            "Sequence" = "3:1"
+            "Attributes" = "3:3"
+                "Dialogs"
+                {
+                    "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_A48788C563D447899056CE3C861D97C7"
+                    {
+                    "Sequence" = "3:100"
+                    "DisplayName" = "8:마침"
+                    "UseDynamicProperties" = "11:TRUE"
+                    "IsDependency" = "11:FALSE"
+                    "SourcePath" = "8:<VsdDialogDir>\\VsdFinishedDlg.wid"
+                        "Properties"
+                        {
+                            "BannerBitmap"
+                            {
+                            "Name" = "8:BannerBitmap"
+                            "DisplayName" = "8:#1001"
+                            "Description" = "8:#1101"
+                            "Type" = "3:8"
+                            "ContextData" = "8:Bitmap"
+                            "Attributes" = "3:4"
+                            "Setting" = "3:1"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                            "UpdateText"
+                            {
+                            "Name" = "8:UpdateText"
+                            "DisplayName" = "8:#1058"
+                            "Description" = "8:#1158"
+                            "Type" = "3:15"
+                            "ContextData" = "8:"
+                            "Attributes" = "3:0"
+                            "Setting" = "3:1"
+                            "Value" = "8:#1258"
+                            "DefaultValue" = "8:#1258"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        "MergeModule"
+        {
+        }
+        "ProjectOutput"
+        {
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_A48AF1B985624A439652040F1EE0B56B"
+            {
+            "SourcePath" = "8:..\\FileMover\\obj\\Release\\FileMover.exe"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_E02DE5AEC3AA4F34B39561D4F543F31B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            "ProjectOutputGroupRegister" = "3:1"
+            "OutputConfiguration" = "8:"
+            "OutputGroupCanonicalName" = "8:Built"
+            "OutputProjectGuid" = "8:{1F7ACFC5-4F06-423A-8C9E-801CA947DB9B}"
+            "ShowKeyOutput" = "11:TRUE"
+                "ExcludeFilters"
+                {
+                }
+            }
+        }
+    }
+}
