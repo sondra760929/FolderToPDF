@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -26,6 +27,19 @@ namespace PDFToImages
                 exe_file_name = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
                 PDFToImages(args[0]);
             }
+        }
+
+        static ImageCodecInfo GetEncoder(ImageFormat format)
+        {
+            ImageCodecInfo[] codecs = ImageCodecInfo.GetImageDecoders();
+            foreach (ImageCodecInfo codec in codecs)
+            {
+                if (codec.FormatID == format.Guid)
+                {
+                    return codec;
+                }
+            }
+            return null;
         }
 
         static void PDFToImages(string path)
@@ -64,7 +78,23 @@ namespace PDFToImages
                                 Bitmap FiratImage = _mupdf.GetBitmap(0, 0, RenderDPI, RenderDPI, 0, RenderType.RGB, false, false, 0);
                                 if (FiratImage != null)
                                 {
-                                    FiratImage.Save(String.Format("{0}\\{1:D4}.jpg", current_folder, i), System.Drawing.Imaging.ImageFormat.Jpeg);
+                                    ImageCodecInfo jpgEncoder = GetEncoder(ImageFormat.Jpeg);
+
+                                    // Create an Encoder object based on the GUID  
+                                    // for the Quality parameter category.  
+                                    System.Drawing.Imaging.Encoder myEncoder =
+                                        System.Drawing.Imaging.Encoder.Quality;
+
+                                    // Create an EncoderParameters object.  
+                                    // An EncoderParameters object has an array of EncoderParameter  
+                                    // objects. In this case, there is only one  
+                                    // EncoderParameter object in the array.  
+                                    EncoderParameters myEncoderParameters = new EncoderParameters(1);
+
+                                    EncoderParameter myEncoderParameter = new EncoderParameter(myEncoder, 75L);
+                                    myEncoderParameters.Param[0] = myEncoderParameter;
+
+                                    FiratImage.Save(String.Format("{0}\\{1:D4}.jpg", current_folder, i), jpgEncoder, myEncoderParameters);
                                 }
                                 Console.SetCursorPosition(0, current_console_line);
                                 Console.Write(i.ToString() + " / " + _mupdf.PageCount.ToString());
