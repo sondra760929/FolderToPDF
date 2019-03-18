@@ -61,10 +61,10 @@ namespace PDFToImages
                             for (int i = 1; i <= _mupdf.PageCount; i++)
                             {
                                 _mupdf.Page = i;
-                                Bitmap FiratImage = _mupdf.GetBitmap(0, 0, RenderDPI, RenderDPI, 0, RenderType.RGB, false, false, 100000000);
+                                Bitmap FiratImage = _mupdf.GetBitmap(0, 0, RenderDPI, RenderDPI, 0, RenderType.RGB, false, false, 0);
                                 if (FiratImage != null)
                                 {
-                                    FiratImage.Save(String.Format("{0}\\{1:D4}.jpg", current_folder, i));
+                                    FiratImage.Save(String.Format("{0}\\{1:D4}.jpg", current_folder, i), System.Drawing.Imaging.ImageFormat.Jpeg);
                                 }
                                 Console.SetCursorPosition(0, current_console_line);
                                 Console.Write(i.ToString() + " / " + _mupdf.PageCount.ToString());
