@@ -18,10 +18,10 @@ namespace PDFToImages
     class Program
     {
         private static string exe_file_name;
-        private static int current_console_line = 0;
         private static int pdf_file_count = 0;
         private static int pdf_page_count = 0;
         private static int jpg_file_count = 0;
+        private static List<string> error_pdf_files = new List<string>();
 
         static void Main(string[] args)
         {
@@ -29,14 +29,28 @@ namespace PDFToImages
             {
                 exe_file_name = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
                 Console.Write(">> PDF to Files Utility from DIGIBOOK 2019/03/22<<\n\n");
-                current_console_line+=2;
                 PDFToImages(args[0]);
-                Console.Write(current_console_line.ToString() + " | " + String.Format("Check PDF and JPG Count : PDF Files ({0}) , PDF Pages ({1}), JPG Files ({2})", pdf_file_count, pdf_page_count, jpg_file_count));
+                Console.Write(String.Format("Check PDF and JPG Count : PDF Files ({0}) , PDF Pages ({1}), JPG Files ({2})", pdf_file_count, pdf_page_count, jpg_file_count));
                 CheckPDFandImages(args[0]);
                 Console.Write("\n");
-                if(pdf_page_count != jpg_file_count)
+                bool is_error_occured = false;
+                if(error_pdf_files.Count() > 0)
                 {
-                    Console.Write(current_console_line.ToString() + " | " + "PDF Page Count is not same as JPG File Count. ReRun PDFToFiles.\n");
+                    is_error_occured = true;
+                    Console.Write("로딩에 실패한 PDF 파일 ({0})개\n", error_pdf_files.Count());
+                    for(int i=0; i<error_pdf_files.Count(); i++)
+                    {
+                        Console.Write((i+1).ToString() + " : {0}\n", error_pdf_files[i]);
+                    }
+                }
+                if (pdf_page_count != jpg_file_count)
+                {
+                    is_error_occured = true;
+                    Console.Write("PDF Page Count is not same as JPG File Count. ReRun PDFToFiles.\n");
+                }
+
+                if (is_error_occured)
+                {
                     int code = Console.Read();
                 }
             }
@@ -73,7 +87,7 @@ namespace PDFToImages
                     {
                         string current_folder = path + "\\" + Path.GetFileNameWithoutExtension(file.Name);
                         DirectoryInfo di = new DirectoryInfo(current_folder);
-                        int RenderDPI = 300;
+                        int RenderDPI = 100;
                         if (di.Exists == false)
                         {
                             di.Create();
@@ -83,8 +97,7 @@ namespace PDFToImages
                         {
                             _mupdf = new MuPDF(file.FullName, null);
                             _mupdf.AntiAlias = true;
-                            Console.Write(current_console_line.ToString() + " | " + "Convert PDF : " + file.FullName + "\n");
-                            current_console_line++;
+                            Console.Write("Convert PDF : " + file.FullName + "\n");
                             for (int i = 1; i <= _mupdf.PageCount; i++)
                             {
                                 _mupdf.Page = i;
@@ -114,14 +127,17 @@ namespace PDFToImages
                                         FiratImage.Save(String.Format("{0}\\{1:D4}.jpg", current_folder, i), jpgEncoder, myEncoderParameters);
                                     }
                                 }
-                                Console.SetCursorPosition(0, current_console_line);
-                                Console.Write(current_console_line.ToString() + " | " + i.ToString() + " / " + _mupdf.PageCount.ToString());
+                                //Console.SetCursorPosition(0, current_console_line);
+                                Console.SetCursorPosition(0, Console.CursorTop);
+                                Console.Write(i.ToString() + " / " + _mupdf.PageCount.ToString());
                             }
                             Console.Write("\n");
-                            current_console_line++;
                         }
                         catch (Exception e)
                         {
+                            //Console.Write(e.ToString());
+                            Console.Write(" PDF 파일에 이상이 있습니다. 확인이 필요합니다.\n");
+                            error_pdf_files.Add(file.FullName);
                             //throw new Pdf2KTException("Error while opening PDF document.", e);
                         }
                     }
@@ -143,7 +159,7 @@ namespace PDFToImages
             {
                 foreach (FileInfo file in files)
                 {
-                    if (file.Extension.ToLower() == ".pdf")
+                    if (file.Extension.ToLower() == ".pdf" && (!error_pdf_files.Contains(file.FullName)))
                     {
                         pdf_file_count++;
                         MuPDF _mupdf;
@@ -153,19 +169,21 @@ namespace PDFToImages
                             _mupdf.AntiAlias = true;
                             pdf_page_count += _mupdf.PageCount;
 
-                            Console.SetCursorPosition(0, current_console_line);
-                            Console.Write(String.Format(current_console_line.ToString() + " | " + "Check PDF and JPG Count : PDF Files ({0}) , PDF Pages ({1}), JPG Files ({2})", pdf_file_count, pdf_page_count, jpg_file_count));
+                            Console.SetCursorPosition(0, Console.CursorTop);
+                            Console.Write(String.Format("Check PDF and JPG Count : PDF Files ({0}) , PDF Pages ({1}), JPG Files ({2})", pdf_file_count, pdf_page_count, jpg_file_count));
                         }
                         catch (Exception e)
                         {
+                            //Console.Write(e.ToString());
+                            Console.Write(" PDF 파일에 이상이 있습니다. 확인이 필요합니다.\n");
                             //throw new Pdf2KTException("Error while opening PDF document.", e);
                         }
                     }
                     else if (file.Extension.ToLower() == ".jpg")
                     {
                         jpg_file_count++;
-                        Console.SetCursorPosition(0, current_console_line);
-                        Console.Write(String.Format(current_console_line.ToString() + " | " + "Check PDF and JPG Count : PDF Files ({0}) , PDF Pages ({1}), JPG Files ({2})", pdf_file_count, pdf_page_count, jpg_file_count));
+                        Console.SetCursorPosition(0, Console.CursorTop);
+                        Console.Write(String.Format("Check PDF and JPG Count : PDF Files ({0}) , PDF Pages ({1}), JPG Files ({2})", pdf_file_count, pdf_page_count, jpg_file_count));
                     }
                 }
             }
@@ -201,8 +219,8 @@ namespace PDFToImages
                         {
                             FiratImage.Save(String.Format("{0}\\{1:D4}.jpg", current_folder, i));
                         }
-                        Console.SetCursorPosition(0, current_console_line);
-                        Console.Write(i.ToString() + " / " + _mupdf.PageCount.ToString());
+                        //Console.SetCursorPosition(0, current_console_line);
+                        Console.Write(i.ToString() + " / " + _mupdf.PageCount.ToString() + "\n");
                     }
                     Console.Write("\n");
                     current_console_line++;
