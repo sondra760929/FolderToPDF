@@ -21,6 +21,7 @@ namespace PDFToImages
         private static int pdf_file_count = 0;
         private static int pdf_page_count = 0;
         private static int jpg_file_count = 0;
+        private static int RenderDPI = 300;
         private static List<string> error_pdf_files = new List<string>();
 
         static void Main(string[] args)
@@ -28,7 +29,10 @@ namespace PDFToImages
             if (args.Length > 0)
             {
                 exe_file_name = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
-                Console.Write(">> PDF to Files Utility from DIGIBOOK 2019/03/22<<\n\n");
+                Console.Write(">> PDF to Files Utility from DIGIBOOK 2019/03/27<<\n\n");
+
+                Console.Write(">> 저장할 이미지의 DPI를 입력하세요. : ");
+                RenderDPI = int.Parse(Console.ReadLine());
                 PDFToImages(args[0]);
                 Console.Write(String.Format("Check PDF and JPG Count : PDF Files ({0}) , PDF Pages ({1}), JPG Files ({2})", pdf_file_count, pdf_page_count, jpg_file_count));
                 CheckPDFandImages(args[0]);
@@ -87,7 +91,6 @@ namespace PDFToImages
                     {
                         string current_folder = path + "\\" + Path.GetFileNameWithoutExtension(file.Name);
                         DirectoryInfo di = new DirectoryInfo(current_folder);
-                        int RenderDPI = 100;
                         if (di.Exists == false)
                         {
                             di.Create();
