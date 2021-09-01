@@ -29,30 +29,37 @@ namespace PDFToImages
             {
                 exe_file_name = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
                 Console.Write(">> PDF to Files Utility from DIGIBOOK 2019/03/22<<\n\n");
-                PDFToImages(args[0]);
-                Console.Write(String.Format("Check PDF and JPG Count : PDF Files ({0}) , PDF Pages ({1}), JPG Files ({2})", pdf_file_count, pdf_page_count, jpg_file_count));
-                CheckPDFandImages(args[0]);
-                Console.Write("\n");
-                bool is_error_occured = false;
-                if(error_pdf_files.Count() > 0)
+                if(args.Length > 1)
                 {
-                    is_error_occured = true;
-                    Console.Write("로딩에 실패한 PDF 파일 ({0})개\n", error_pdf_files.Count());
-                    for(int i=0; i<error_pdf_files.Count(); i++)
-                    {
-                        Console.Write((i+1).ToString() + " : {0}\n", error_pdf_files[i]);
-                    }
+                    PDFToImages(args[0], args[1]);
                 }
-                if (pdf_page_count != jpg_file_count)
+                else
                 {
-                    is_error_occured = true;
-                    Console.Write("PDF Page Count is not same as JPG File Count. ReRun PDFToFiles.\n");
+                    PDFToImages(args[0]);
                 }
+                //Console.Write(String.Format("Check PDF and JPG Count : PDF Files ({0}) , PDF Pages ({1}), JPG Files ({2})", pdf_file_count, pdf_page_count, jpg_file_count));
+                //CheckPDFandImages(args[0]);
+                //Console.Write("\n");
+                //bool is_error_occured = false;
+                //if(error_pdf_files.Count() > 0)
+                //{
+                //    is_error_occured = true;
+                //    Console.Write("로딩에 실패한 PDF 파일 ({0})개\n", error_pdf_files.Count());
+                //    for(int i=0; i<error_pdf_files.Count(); i++)
+                //    {
+                //        Console.Write((i+1).ToString() + " : {0}\n", error_pdf_files[i]);
+                //    }
+                //}
+                //if (pdf_page_count != jpg_file_count)
+                //{
+                //    is_error_occured = true;
+                //    Console.Write("PDF Page Count is not same as JPG File Count. ReRun PDFToFiles.\n");
+                //}
 
-                if (is_error_occured)
-                {
-                    int code = Console.Read();
-                }
+                //if (is_error_occured)
+                //{
+                //    int code = Console.Read();
+                //}
             }
         }
 
@@ -69,77 +76,104 @@ namespace PDFToImages
             return null;
         }
 
-        static void PDFToImages(string path)
+        static void PDFToImagesFile(string path, FileInfo file, string target_path = "")
+        {
+            string current_folder;
+            if (target_path == "")
+            {
+                current_folder = path + "\\" + Path.GetFileNameWithoutExtension(file.Name);
+            }
+            else
+            {
+                current_folder = path + "\\" + target_path;
+            }
+            DirectoryInfo di = new DirectoryInfo(current_folder);
+            int RenderDPI = 100;
+            //int RenderDPI = 50;
+            if (di.Exists == false)
+            {
+                di.Create();
+            }
+            MuPDF _mupdf;
+            try
+            {
+                _mupdf = new MuPDF(file.FullName, null);
+                _mupdf.AntiAlias = true;
+                Console.Write("Convert PDF : " + file.FullName + "\n");
+                for (int i = 1; i <= _mupdf.PageCount; i++)
+                {
+                    _mupdf.Page = i;
+                    string new_file_name = String.Format("{0}\\{1:D4}.jpg", current_folder, i);
+                    FileInfo new_file = new FileInfo(new_file_name);
+                    if (new_file.Exists == false)
+                    {
+                        Bitmap FiratImage = _mupdf.GetBitmap(0, 0, RenderDPI, RenderDPI, 0, RenderType.RGB, false, false, 0);
+                        if (FiratImage != null)
+                        {
+                            ImageCodecInfo jpgEncoder = GetEncoder(ImageFormat.Jpeg);
+
+                            // Create an Encoder object based on the GUID  
+                            // for the Quality parameter category.  
+                            System.Drawing.Imaging.Encoder myEncoder =
+                                System.Drawing.Imaging.Encoder.Quality;
+
+                            // Create an EncoderParameters object.  
+                            // An EncoderParameters object has an array of EncoderParameter  
+                            // objects. In this case, there is only one  
+                            // EncoderParameter object in the array.  
+                            EncoderParameters myEncoderParameters = new EncoderParameters(1);
+
+                            EncoderParameter myEncoderParameter = new EncoderParameter(myEncoder, 85L);
+                            myEncoderParameters.Param[0] = myEncoderParameter;
+
+                            FiratImage.Save(String.Format("{0}\\{1:D4}.jpg", current_folder, i), jpgEncoder, myEncoderParameters);
+                        }
+                    }
+                    //Console.SetCursorPosition(0, current_console_line);
+                    Console.SetCursorPosition(0, Console.CursorTop);
+                    Console.Write(i.ToString() + " / " + _mupdf.PageCount.ToString());
+                }
+                Console.Write("\n");
+            }
+            catch (Exception e)
+            {
+                //Console.Write(e.ToString());
+                Console.Write(" PDF 파일에 이상이 있습니다. 확인이 필요합니다.\n");
+                error_pdf_files.Add(file.FullName);
+                //throw new Pdf2KTException("Error while opening PDF document.", e);
+            }
+        }
+
+        static void PDFToImages(string path, string target_path = "")
         {
             DirectoryInfo d = new DirectoryInfo(path);
-
-            DirectoryInfo[] dirs = d.GetDirectories();
-            foreach (DirectoryInfo dir in dirs)
+            if (d.Exists)
             {
-                PDFToImages(dir.FullName);
+                DirectoryInfo[] dirs = d.GetDirectories();
+                foreach (DirectoryInfo dir in dirs)
+                {
+                    PDFToImages(dir.FullName);
+                }
+                FileInfo[] files = d.GetFiles();
+                if (files.Length > 0)
+                {
+                    foreach (FileInfo file in files)
+                    {
+                        if (file.Extension.ToLower() == ".pdf")
+                        {
+                            PDFToImagesFile(path, file, target_path);
+                        }
+                    }
+                }
             }
-            FileInfo[] files = d.GetFiles();
-            if (files.Length > 0)
+            else
             {
-                foreach (FileInfo file in files)
+                FileInfo file = new FileInfo(path);
+                if (file.Exists)
                 {
                     if (file.Extension.ToLower() == ".pdf")
                     {
-                        string current_folder = path + "\\" + Path.GetFileNameWithoutExtension(file.Name);
-                        DirectoryInfo di = new DirectoryInfo(current_folder);
-                        int RenderDPI = 100;
-                        if (di.Exists == false)
-                        {
-                            di.Create();
-                        }
-                        MuPDF _mupdf;
-                        try
-                        {
-                            _mupdf = new MuPDF(file.FullName, null);
-                            _mupdf.AntiAlias = true;
-                            Console.Write("Convert PDF : " + file.FullName + "\n");
-                            for (int i = 1; i <= _mupdf.PageCount; i++)
-                            {
-                                _mupdf.Page = i;
-                                string new_file_name = String.Format("{0}\\{1:D4}.jpg", current_folder, i);
-                                FileInfo new_file = new FileInfo(new_file_name);
-                                if (new_file.Exists == false)
-                                {
-                                    Bitmap FiratImage = _mupdf.GetBitmap(0, 0, RenderDPI, RenderDPI, 0, RenderType.RGB, false, false, 0);
-                                    if (FiratImage != null)
-                                    {
-                                        ImageCodecInfo jpgEncoder = GetEncoder(ImageFormat.Jpeg);
-
-                                        // Create an Encoder object based on the GUID  
-                                        // for the Quality parameter category.  
-                                        System.Drawing.Imaging.Encoder myEncoder =
-                                            System.Drawing.Imaging.Encoder.Quality;
-
-                                        // Create an EncoderParameters object.  
-                                        // An EncoderParameters object has an array of EncoderParameter  
-                                        // objects. In this case, there is only one  
-                                        // EncoderParameter object in the array.  
-                                        EncoderParameters myEncoderParameters = new EncoderParameters(1);
-
-                                        EncoderParameter myEncoderParameter = new EncoderParameter(myEncoder, 85L);
-                                        myEncoderParameters.Param[0] = myEncoderParameter;
-
-                                        FiratImage.Save(String.Format("{0}\\{1:D4}.jpg", current_folder, i), jpgEncoder, myEncoderParameters);
-                                    }
-                                }
-                                //Console.SetCursorPosition(0, current_console_line);
-                                Console.SetCursorPosition(0, Console.CursorTop);
-                                Console.Write(i.ToString() + " / " + _mupdf.PageCount.ToString());
-                            }
-                            Console.Write("\n");
-                        }
-                        catch (Exception e)
-                        {
-                            //Console.Write(e.ToString());
-                            Console.Write(" PDF 파일에 이상이 있습니다. 확인이 필요합니다.\n");
-                            error_pdf_files.Add(file.FullName);
-                            //throw new Pdf2KTException("Error while opening PDF document.", e);
-                        }
+                        PDFToImagesFile(file.Directory.FullName, file, target_path);
                     }
                 }
             }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.136
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FolderToPDF", "FolderToPDF\FolderToPDF.csproj", "{5085C187-3544-432C-9DFA-1DA6E979DEBA}"
 EndProject
@@ -14,6 +14,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileMover", "FileMover\FileMover.csproj", "{1F7ACFC5-4F06-423A-8C9E-801CA947DB9B}"
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SetupFileMover", "SetupFileMover\SetupFileMover.vdproj", "{9666D0BB-C3E2-4097-9381-3CEBFCB3D717}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EvenNumberMover", "EvenNumberMover\EvenNumberMover.csproj", "{643C7F3F-C3BB-4270-97CD-6B287ACB3121}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SetupEvenNumberMover", "SetupEvenNumberMover\SetupEvenNumberMover.vdproj", "{D374EF11-8875-4469-915C-DEAC2274024D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,6 +69,18 @@ Global
 		{9666D0BB-C3E2-4097-9381-3CEBFCB3D717}.Release|Any CPU.ActiveCfg = Release
 		{9666D0BB-C3E2-4097-9381-3CEBFCB3D717}.Release|x64.ActiveCfg = Release
 		{9666D0BB-C3E2-4097-9381-3CEBFCB3D717}.Release|x64.Build.0 = Release
+		{643C7F3F-C3BB-4270-97CD-6B287ACB3121}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{643C7F3F-C3BB-4270-97CD-6B287ACB3121}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{643C7F3F-C3BB-4270-97CD-6B287ACB3121}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{643C7F3F-C3BB-4270-97CD-6B287ACB3121}.Debug|x64.Build.0 = Debug|Any CPU
+		{643C7F3F-C3BB-4270-97CD-6B287ACB3121}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{643C7F3F-C3BB-4270-97CD-6B287ACB3121}.Release|Any CPU.Build.0 = Release|Any CPU
+		{643C7F3F-C3BB-4270-97CD-6B287ACB3121}.Release|x64.ActiveCfg = Release|Any CPU
+		{643C7F3F-C3BB-4270-97CD-6B287ACB3121}.Release|x64.Build.0 = Release|Any CPU
+		{D374EF11-8875-4469-915C-DEAC2274024D}.Debug|Any CPU.ActiveCfg = Debug
+		{D374EF11-8875-4469-915C-DEAC2274024D}.Debug|x64.ActiveCfg = Debug
+		{D374EF11-8875-4469-915C-DEAC2274024D}.Release|Any CPU.ActiveCfg = Release
+		{D374EF11-8875-4469-915C-DEAC2274024D}.Release|x64.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

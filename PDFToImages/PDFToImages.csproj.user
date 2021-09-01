@@ -4,7 +4,7 @@
     <StartArguments>"C:\Users\user\Downloads\00"</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <StartArguments>"C:\Users\sondr\Desktop\새 폴더"</StartArguments>
+    <StartArguments>"e:\1.pdf"</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <StartArguments>"C:\Users\user\Downloads\00"</StartArguments>
