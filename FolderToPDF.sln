@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.136
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31515.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FolderToPDF", "FolderToPDF\FolderToPDF.csproj", "{5085C187-3544-432C-9DFA-1DA6E979DEBA}"
 EndProject
@@ -14,6 +14,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileMover", "FileMover\FileMover.csproj", "{1F7ACFC5-4F06-423A-8C9E-801CA947DB9B}"
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SetupFileMover", "SetupFileMover\SetupFileMover.vdproj", "{9666D0BB-C3E2-4097-9381-3CEBFCB3D717}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OCRToPDF", "OCRToPDF\OCRToPDF.csproj", "{CA967729-1FEE-403C-A446-9200B34CE43E}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SetupOCRToPDF", "SetupOCRToPDF\SetupOCRToPDF.vdproj", "{8926D498-61DC-45D5-ADE1-7F83D44AE779}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,6 +69,18 @@ Global
 		{9666D0BB-C3E2-4097-9381-3CEBFCB3D717}.Release|Any CPU.ActiveCfg = Release
 		{9666D0BB-C3E2-4097-9381-3CEBFCB3D717}.Release|x64.ActiveCfg = Release
 		{9666D0BB-C3E2-4097-9381-3CEBFCB3D717}.Release|x64.Build.0 = Release
+		{CA967729-1FEE-403C-A446-9200B34CE43E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA967729-1FEE-403C-A446-9200B34CE43E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA967729-1FEE-403C-A446-9200B34CE43E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CA967729-1FEE-403C-A446-9200B34CE43E}.Debug|x64.Build.0 = Debug|Any CPU
+		{CA967729-1FEE-403C-A446-9200B34CE43E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA967729-1FEE-403C-A446-9200B34CE43E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA967729-1FEE-403C-A446-9200B34CE43E}.Release|x64.ActiveCfg = Release|Any CPU
+		{CA967729-1FEE-403C-A446-9200B34CE43E}.Release|x64.Build.0 = Release|Any CPU
+		{8926D498-61DC-45D5-ADE1-7F83D44AE779}.Debug|Any CPU.ActiveCfg = Debug
+		{8926D498-61DC-45D5-ADE1-7F83D44AE779}.Debug|x64.ActiveCfg = Debug
+		{8926D498-61DC-45D5-ADE1-7F83D44AE779}.Release|Any CPU.ActiveCfg = Release
+		{8926D498-61DC-45D5-ADE1-7F83D44AE779}.Release|x64.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
