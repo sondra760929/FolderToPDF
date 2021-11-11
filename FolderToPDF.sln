@@ -18,6 +18,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EvenNumberMover", "EvenNumberMover\EvenNumberMover.csproj", "{643C7F3F-C3BB-4270-97CD-6B287ACB3121}"
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SetupEvenNumberMover", "SetupEvenNumberMover\SetupEvenNumberMover.vdproj", "{D374EF11-8875-4469-915C-DEAC2274024D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OCRToPDF", "OCRToPDF\OCRToPDF.csproj", "{CA967729-1FEE-403C-A446-9200B34CE43E}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SetupOCRToPDF", "SetupOCRToPDF\SetupOCRToPDF.vdproj", "{8926D498-61DC-45D5-ADE1-7F83D44AE779}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -81,6 +84,18 @@ Global
 		{D374EF11-8875-4469-915C-DEAC2274024D}.Debug|x64.ActiveCfg = Debug
 		{D374EF11-8875-4469-915C-DEAC2274024D}.Release|Any CPU.ActiveCfg = Release
 		{D374EF11-8875-4469-915C-DEAC2274024D}.Release|x64.ActiveCfg = Release
+		{CA967729-1FEE-403C-A446-9200B34CE43E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA967729-1FEE-403C-A446-9200B34CE43E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA967729-1FEE-403C-A446-9200B34CE43E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CA967729-1FEE-403C-A446-9200B34CE43E}.Debug|x64.Build.0 = Debug|Any CPU
+		{CA967729-1FEE-403C-A446-9200B34CE43E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA967729-1FEE-403C-A446-9200B34CE43E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA967729-1FEE-403C-A446-9200B34CE43E}.Release|x64.ActiveCfg = Release|Any CPU
+		{CA967729-1FEE-403C-A446-9200B34CE43E}.Release|x64.Build.0 = Release|Any CPU
+		{8926D498-61DC-45D5-ADE1-7F83D44AE779}.Debug|Any CPU.ActiveCfg = Debug
+		{8926D498-61DC-45D5-ADE1-7F83D44AE779}.Debug|x64.ActiveCfg = Debug
+		{8926D498-61DC-45D5-ADE1-7F83D44AE779}.Release|Any CPU.ActiveCfg = Release
+		{8926D498-61DC-45D5-ADE1-7F83D44AE779}.Release|x64.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
