@@ -103,7 +103,7 @@ namespace EvenNumberMover
                 MoveFilesToParent(dir.FullName);
             }
         }
-        static void EraseBlankFolder(string path)
+        static bool EraseBlankFolder(string path)
         {
             DirectoryInfo d = new DirectoryInfo(path);
             FileInfo[] files = d.GetFiles();
@@ -112,14 +112,31 @@ namespace EvenNumberMover
             if(files.Length == 0 && dirs.Length == 0)
             {
                 d.Delete();
+                return true;
             }
             else
             {
-                foreach (DirectoryInfo dir in dirs)
+                bool erase_child = true;
+                while (erase_child && dirs.Length > 0)
                 {
-                    EraseBlankFolder(dir.FullName);
+                    erase_child = false;
+                    foreach (DirectoryInfo dir in dirs)
+                    {
+                        if(EraseBlankFolder(dir.FullName))
+                        {
+                            erase_child = true;
+                        }
+                    }
+                    dirs = d.GetDirectories();
+                }
+
+                if (files.Length == 0 && dirs.Length == 0)
+                {
+                    d.Delete();
+                    return true;
                 }
             }
+            return false;
         }
     }
 }
