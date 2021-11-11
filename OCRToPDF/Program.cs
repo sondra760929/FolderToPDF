@@ -14,6 +14,7 @@ using Newtonsoft.Json.Linq;
 using PdfSharp.Drawing.Layout;
 using PDFjet.NET;
 using Font = PDFjet.NET.Font;
+using HPdf;
 
 namespace FolderToPDF
 {
@@ -32,7 +33,7 @@ namespace FolderToPDF
 		static string accessKey = "";//"bnBrbU5NRWJBakZYTnRJTWJoY1NpV1ZwenFEYllEaHM=";
 		static string uriBase = "";//"https://43d0993faa7143c0add4cbdfa7fac53d.apigw.ntruss.com/custom/v1/12325/800a9d7344b09c6a7ea43f71842cf3473eb134405af99c384a5a5c8c204b39d2/general";
 
-		static void Main(string[] args)
+        static void Main(string[] args)
 		{
             if (args.Length > 0)
             {
@@ -52,15 +53,15 @@ namespace FolderToPDF
 
 				Console.Write(">> Folder To PDF Utility from DIGIBOOK 2019/03/22<<\n\n");
                 FolderToPDF(args[0]);
-                //Console.Write(String.Format("Check PDF and Image Count : PDF Files ({0}) , PDF Pages ({1}), Image Files ({2})", pdf_file_count, pdf_page_count, jpg_file_count));
-				Console.Clear();
-				CheckPDFandImages(args[0]);
-                Console.Write("\n");
-                if (pdf_page_count != jpg_file_count)
-                {
-                    Console.Write("PDF Page Count is not same as Image File Count. ReRun PDFToFiles.\n");
-                    int code = Console.Read();
-                }
+    //            Console.Write(String.Format("Check PDF and Image Count : PDF Files ({0}) , PDF Pages ({1}), Image Files ({2})", pdf_file_count, pdf_page_count, jpg_file_count));
+				//Console.Clear();
+				//CheckPDFandImages(args[0]);
+    //            Console.Write("\n");
+    //            if (pdf_page_count != jpg_file_count)
+    //            {
+    //                Console.Write("PDF Page Count is not same as Image File Count. ReRun PDFToFiles.\n");
+    //                int code = Console.Read();
+    //            }
             }
         }
 
@@ -153,6 +154,105 @@ namespace FolderToPDF
 			FileInfo[] files = d.GetFiles();
 			if (files.Length > 0)
 			{
+				try
+				{
+					HPdfDoc pdf = new HPdfDoc();
+					pdf.UseKREncodings();
+					pdf.UseKRFonts();
+					HPdfFont kr_font = pdf.GetFont("Dotum", "KSC-EUC-H");
+
+					/*configure pdf-document to be compressed. */
+					pdf.SetCompressionMode(HPdfDoc.HPDF_COMP_ALL);
+
+					foreach (FileInfo file in files)
+					{
+						if (image_format.Contains(file.Extension.ToLower()))
+						{
+							String fileName = file.FullName;
+							HPdfImage image = null;
+							if (file.Extension.ToLower() == ".jpg" || file.Extension.ToLower() == ".jpeg")
+							{
+								image = pdf.LoadJpegImageFromFile(fileName);
+							}
+							else if (file.Extension.ToLower() == ".png")
+							{
+								image = pdf.LoadPngImageFromFile(fileName);
+							}
+							//else if (file.Extension.ToLower() == ".bmp")
+							//{
+							//	image = pdf.LoadRawImageFromFile(fileName);
+							//}
+							if (image != null)
+							{
+								Console.Write(">> OCR Processing...\n");
+
+								string json = DoOCR(file.FullName, file.Name, file.Extension.ToLower());
+								List<FieldData> test = GetFields(json);
+
+								HPdfPage page = pdf.AddPage();
+								page.SetWidth(image.GetWidth());
+								page.SetHeight(image.GetHeight());
+								int page_height = (int)image.GetHeight();
+
+								page.BeginText();
+								page.MoveTextPos(0, page_height);
+								float current_pos_x = 0;
+								float current_pos_y = 0;
+								for (int i = 0; i < test.Count; i++)
+								{
+									XFont font = new XFont("Arial", 40);
+									int minx = 0, miny = 0, maxx = 0, maxy = 0;
+									for (int j = 0; j < test[i].points.Count; j++)
+									{
+										if (j == 0)
+										{
+											minx = (int)test[i].points[j].GetX();
+											maxx = (int)test[i].points[j].GetX();
+											miny = (int)test[i].points[j].GetY();
+											maxy = (int)test[i].points[j].GetY();
+										}
+										else
+										{
+											if (minx > (int)test[i].points[j].GetX()) minx = (int)test[i].points[j].GetX();
+											if (maxx < (int)test[i].points[j].GetX()) maxx = (int)test[i].points[j].GetX();
+											if (miny > (int)test[i].points[j].GetY()) miny = (int)test[i].points[j].GetY();
+											if (maxy < (int)test[i].points[j].GetY()) maxy = (int)test[i].points[j].GetY();
+										}
+									}
+									page.SetFontAndSize(kr_font, (maxy - miny) * 0.7f);
+									page.MoveTextPos(minx - current_pos_x, - (maxy - current_pos_y));
+									page.ShowText(test[i].text);
+									current_pos_x = minx;
+									current_pos_y = maxy;
+								}
+								page.EndText();
+
+								page.DrawImage(image, 0, 0, image.GetWidth(), image.GetHeight());
+							}
+						}
+					}
+					pdf.SaveToFile(path + ".pdf");
+
+				}
+				catch (Exception e)
+				{
+					Console.Error.WriteLine(e.Message);
+				}
+			}
+
+			DirectoryInfo[] dirs = d.GetDirectories();
+			foreach (DirectoryInfo dir in dirs)
+			{
+				FolderToPDF(dir.FullName);
+			}
+		}
+
+		static void FolderToPDF_OLD(string path)
+		{
+			DirectoryInfo d = new DirectoryInfo(path);
+			FileInfo[] files = d.GetFiles();
+			if (files.Length > 0)
+			{
 				FileStream fos = new FileStream(path + ".pdf", FileMode.Create);
 				BufferedStream bos = new BufferedStream(fos);
 
@@ -173,8 +273,8 @@ namespace FolderToPDF
 						String fileName = file.FullName;
 						FileStream fis1 = new FileStream(fileName, FileMode.Open, FileAccess.Read);
 						int image_type = ImageType.JPG;
-						if(file.Extension.ToLower() == ".jpg" || file.Extension.ToLower() == ".jpeg")
-                        {
+						if (file.Extension.ToLower() == ".jpg" || file.Extension.ToLower() == ".jpeg")
+						{
 							image_type = ImageType.JPG;
 						}
 						else if (file.Extension.ToLower() == ".png")
@@ -264,7 +364,7 @@ namespace FolderToPDF
 			DirectoryInfo[] dirs = d.GetDirectories();
 			foreach (DirectoryInfo dir in dirs)
 			{
-				FolderToPDF(dir.FullName);
+				FolderToPDF_OLD(dir.FullName);
 			}
 		}
 
