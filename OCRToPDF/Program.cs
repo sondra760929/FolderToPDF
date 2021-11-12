@@ -30,28 +30,25 @@ namespace FolderToPDF
 		private static int pdf_file_count = 0;
 		private static int pdf_page_count = 0;
 		private static int jpg_file_count = 0;
-		static string accessKey = "";//"bnBrbU5NRWJBakZYTnRJTWJoY1NpV1ZwenFEYllEaHM=";
-		static string uriBase = "";//"https://43d0993faa7143c0add4cbdfa7fac53d.apigw.ntruss.com/custom/v1/12325/800a9d7344b09c6a7ea43f71842cf3473eb134405af99c384a5a5c8c204b39d2/general";
-
+		static string accessKey = "RFV6Q1RPSnRlbElzelljdHRoeEVUWlZaZGRFWnZuT0U=";//"bnBrbU5NRWJBakZYTnRJTWJoY1NpV1ZwenFEYllEaHM=";
+		static string uriBase = "https://bd61323638684688a1e648de03a65c1f.apigw.ntruss.com/custom/v1/12350/9b3ed5ef657408042e07bb6deb64648dd11faf84671df3bdb5bb9d19dc463da8/general";//"https://43d0993faa7143c0add4cbdfa7fac53d.apigw.ntruss.com/custom/v1/12325/800a9d7344b09c6a7ea43f71842cf3473eb134405af99c384a5a5c8c204b39d2/general";
+		
         static void Main(string[] args)
 		{
             if (args.Length > 0)
             {
 				System.IO.FileInfo fi = new System.IO.FileInfo("C:/Program Files (x86)/DIGIBOOK/OCRToPDF/naver.txt");
-				if(!fi.Exists)
+				if(fi.Exists)
 				{
-					Console.Write("OCR 설정 파일이 없습니다.");
-					return;
+					string[] lines = System.IO.File.ReadAllLines("C:/Program Files (x86)/DIGIBOOK/OCRToPDF/naver.txt");
+					if (lines.Length == 2)
+					{
+						accessKey = lines[0];
+						uriBase = lines[1];
+					}
 				}
 
-				string[] lines = System.IO.File.ReadAllLines("C:/Program Files (x86)/DIGIBOOK/OCRToPDF/naver.txt");
-				if(lines.Length == 2)
-                {
-					accessKey = lines[0];
-					uriBase = lines[1];
-				}
-
-				Console.Write(">> Folder To PDF Utility from DIGIBOOK 2019/03/22<<\n\n");
+				Console.Write(">> OCR To PDF Utility from DIGIBOOK 2021/11/11<<\n\n");
                 FolderToPDF(args[0]);
     //            Console.Write(String.Format("Check PDF and Image Count : PDF Files ({0}) , PDF Pages ({1}), Image Files ({2})", pdf_file_count, pdf_page_count, jpg_file_count));
 				//Console.Clear();
@@ -196,8 +193,8 @@ namespace FolderToPDF
 
 								page.BeginText();
 								page.MoveTextPos(0, page_height);
-								float current_pos_x = 0;
-								float current_pos_y = 0;
+								//float current_pos_x = 0;
+								//float current_pos_y = 0;
 								for (int i = 0; i < test.Count; i++)
 								{
 									XFont font = new XFont("Arial", 40);
@@ -220,10 +217,13 @@ namespace FolderToPDF
 										}
 									}
 									page.SetFontAndSize(kr_font, (maxy - miny) * 0.7f);
-									page.MoveTextPos(minx - current_pos_x, - (maxy - current_pos_y));
-									page.ShowText(test[i].text);
-									current_pos_x = minx;
-									current_pos_y = maxy;
+									//page.MoveTextPos(minx - current_pos_x, - (maxy - current_pos_y));
+									//page.ShowText(test[i].text);
+
+									uint len = 0;
+									page.TextRect(minx, page_height - miny, maxx, page_height - maxy, test[i].text, HPdfTextAlignment.HPDF_TALIGN_CENTER, ref len);
+									//current_pos_x = minx;
+									//current_pos_y = maxy;
 								}
 								page.EndText();
 
