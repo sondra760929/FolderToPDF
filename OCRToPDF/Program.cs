@@ -15,6 +15,8 @@ using PdfSharp.Drawing.Layout;
 using PDFjet.NET;
 using Font = PDFjet.NET.Font;
 using HPdf;
+using System.Diagnostics;
+using System.Net.Mail;
 
 namespace FolderToPDF
 {
@@ -27,20 +29,28 @@ namespace FolderToPDF
 	class Program
 	{
 		static string[] image_format = new string[] { ".jpg", ".jpeg", ".png", ".bmp" };
-		private static int pdf_file_count = 0;
-		private static int pdf_page_count = 0;
-		private static int jpg_file_count = 0;
+		//private static int pdf_file_count = 0;
+		//private static int pdf_page_count = 0;
+		//private static int jpg_file_count = 0;
+		private static int ocr_processing_page_count = 0;
+		private static int pdf_save_count = 0;
 		static string accessKey = "RFV6Q1RPSnRlbElzelljdHRoeEVUWlZaZGRFWnZuT0U=";//"bnBrbU5NRWJBakZYTnRJTWJoY1NpV1ZwenFEYllEaHM=";
 		static string uriBase = "https://bd61323638684688a1e648de03a65c1f.apigw.ntruss.com/custom/v1/12350/9b3ed5ef657408042e07bb6deb64648dd11faf84671df3bdb5bb9d19dc463da8/general";//"https://43d0993faa7143c0add4cbdfa7fac53d.apigw.ntruss.com/custom/v1/12325/800a9d7344b09c6a7ea43f71842cf3473eb134405af99c384a5a5c8c204b39d2/general";
-		
+
+		private static bool ocr_all = false;
+		private static List<int> ocr_pages = new List<int>();
+
+		private static MailAddress sendAddress = new MailAddress("qnrtmzos@gmail.com");
+		private static MailAddress toAddress = new MailAddress("ceo@docuscan.co.kr");
+		private static string sendPassword = "jwfqpcndndqyanwj";
         static void Main(string[] args)
 		{
             if (args.Length > 0)
             {
-				System.IO.FileInfo fi = new System.IO.FileInfo("C:/Program Files (x86)/DIGIBOOK/OCRToPDF/naver.txt");
+				System.IO.FileInfo fi = new System.IO.FileInfo("C:/Program Files/DIGIBOOK/OCRToPDF/naver.txt");
 				if(fi.Exists)
 				{
-					string[] lines = System.IO.File.ReadAllLines("C:/Program Files (x86)/DIGIBOOK/OCRToPDF/naver.txt");
+					string[] lines = System.IO.File.ReadAllLines("C:/Program Files/DIGIBOOK/OCRToPDF/naver.txt");
 					if (lines.Length == 2)
 					{
 						accessKey = lines[0];
@@ -49,19 +59,135 @@ namespace FolderToPDF
 				}
 
 				Console.Write(">> OCR To PDF Utility from DIGIBOOK 2021/11/11<<\n\n");
-                FolderToPDF(args[0]);
-    //            Console.Write(String.Format("Check PDF and Image Count : PDF Files ({0}) , PDF Pages ({1}), Image Files ({2})", pdf_file_count, pdf_page_count, jpg_file_count));
+
+				Console.Write("암호를 입력하세요. : ");
+				string input = Console.ReadLine();
+
+				if(input != "ceohwang")
+                {
+					Console.Write("Wrong Password.\n");
+					return;
+				}
+
+				Console.Write("처리 방식을 선택하세요. [all / 1 / 1-15] : ");
+				input = Console.ReadLine();
+
+				if(input.ToLower().Contains("all"))
+                {
+					ocr_all = true;
+                }
+                else
+                {
+					ocr_all = false;
+					string[] pages = input.Split(',');
+					for(int i=0; i<pages.Length; i++)
+                    {
+						int index = pages[i].IndexOf('-');
+						if(index > 0)
+                        {
+							int start = 0;
+							int end = 0;
+							if (int.TryParse(pages[i].Substring(0, index), out start))
+							{
+								if (int.TryParse(pages[i].Substring(index+1, pages[i].Length - index - 1), out end))
+								{
+									if(end > start)
+                                    {
+										for(int j=start; j<=end; j++)
+                                        {
+											ocr_pages.Add(j);
+                                        }
+									}
+								}
+							}
+						}
+						else
+                        {
+							index = pages[i].IndexOf('~');
+							if(index > 0)
+                            {
+								int start = 0;
+								int end = 0;
+								if (int.TryParse(pages[i].Substring(0, index), out start))
+								{
+									if (int.TryParse(pages[i].Substring(index + 1, pages[i].Length - index - 1), out end))
+									{
+										if (end > start)
+										{
+											for (int j = start; j <= end; j++)
+											{
+												ocr_pages.Add(j);
+											}
+										}
+									}
+								}
+							}
+							else
+                            {
+								int start = 0;
+								if (int.TryParse(pages[i], out start))
+								{
+									ocr_pages.Add(start);
+								}
+							}
+						}
+                    }
+                }
+
+				if (ocr_all || ocr_pages.Count > 0)
+				{
+					FolderToPDF(args[0]);
+					string mail_content = "";
+					mail_content = "OCR 처리 페이지 : " + ocr_processing_page_count.ToString() + "\n\n" + "PDF 생성 파일 개수 : " + pdf_save_count.ToString();
+					SendEMail(DateTime.Now.ToString("yyyy-MM-dd HHmmss") + " OCR to PDF 결과 리포트", mail_content);
+                }
+				//            Console.Write(String.Format("Check PDF and Image Count : PDF Files ({0}) , PDF Pages ({1}), Image Files ({2})", pdf_file_count, pdf_page_count, jpg_file_count));
 				//Console.Clear();
 				//CheckPDFandImages(args[0]);
-    //            Console.Write("\n");
-    //            if (pdf_page_count != jpg_file_count)
-    //            {
-    //                Console.Write("PDF Page Count is not same as Image File Count. ReRun PDFToFiles.\n");
-    //                int code = Console.Read();
-    //            }
-            }
+				//            Console.Write("\n");
+				//            if (pdf_page_count != jpg_file_count)
+				//            {
+				//                Console.Write("PDF Page Count is not same as Image File Count. ReRun PDFToFiles.\n");
+				//                int code = Console.Read();
+				//            }
+			}
         }
 
+		static bool SendEMail(string subobject, string body)
+        {
+			SmtpClient smtp = null;
+			MailMessage message = null;
+            try
+            {
+				smtp = new SmtpClient
+				{
+					Host = "smtp.gmail.com",
+					EnableSsl = true,
+					DeliveryMethod = SmtpDeliveryMethod.Network,
+					Credentials = new NetworkCredential(sendAddress.Address, sendPassword),
+					Timeout = 20000
+				};
+				message = new MailMessage(sendAddress, toAddress)
+				{
+					Subject = subobject,
+					Body = body
+				};
+				smtp.Send(message);
+				return true;
+            }
+			catch(Exception e)
+            {
+				return false;
+            }
+			finally
+            {
+				if (smtp != null)
+					smtp.Dispose();
+				if (message != null)
+					message.Dispose();
+            }
+			return false;
+        }
 		static List<FieldData> GetFields(string json)
         {
 			List<FieldData> return_value = new List<FieldData>();
@@ -104,46 +230,46 @@ namespace FolderToPDF
 
 			return return_value;
 		}
-		static void CheckPDFandImages(string path)
-		{
-			DirectoryInfo d = new DirectoryInfo(path);
+		//static void CheckPDFandImages(string path)
+		//{
+		//	DirectoryInfo d = new DirectoryInfo(path);
 
-			DirectoryInfo[] dirs = d.GetDirectories();
-			foreach (DirectoryInfo dir in dirs)
-			{
-				CheckPDFandImages(dir.FullName);
-			}
-			FileInfo[] files = d.GetFiles();
-			if (files.Length > 0)
-			{
-				foreach (FileInfo file in files)
-				{
-					if (file.Extension.ToLower() == ".pdf")
-					{
-						pdf_file_count++;
-						//MuPDF _mupdf;
-						try
-						{
-							PdfDocument doc = new PdfDocument(file.FullName);
-							pdf_page_count += doc.Pages.Count;
+		//	DirectoryInfo[] dirs = d.GetDirectories();
+		//	foreach (DirectoryInfo dir in dirs)
+		//	{
+		//		CheckPDFandImages(dir.FullName);
+		//	}
+		//	FileInfo[] files = d.GetFiles();
+		//	if (files.Length > 0)
+		//	{
+		//		foreach (FileInfo file in files)
+		//		{
+		//			if (file.Extension.ToLower() == ".pdf")
+		//			{
+		//				pdf_file_count++;
+		//				//MuPDF _mupdf;
+		//				try
+		//				{
+		//					PdfDocument doc = new PdfDocument(file.FullName);
+		//					pdf_page_count += doc.Pages.Count;
 
-							Console.SetCursorPosition(0, 1);
-							Console.Write(String.Format("Check PDF and Image Count : PDF Files ({0}) , PDF Pages ({1}), Image Files ({2})", pdf_file_count, pdf_page_count, jpg_file_count));
-						}
-						catch (Exception e)
-						{
-							//throw new Pdf2KTException("Error while opening PDF document.", e);
-						}
-					}
-					else if (image_format.Contains(file.Extension.ToLower()))
-					{
-						jpg_file_count++;
-						Console.SetCursorPosition(0, 1);
-						Console.Write(String.Format("Check PDF and Image Count : PDF Files ({0}) , PDF Pages ({1}), Image Files ({2})", pdf_file_count, pdf_page_count, jpg_file_count));
-					}
-				}
-			}
-		}
+		//					Console.SetCursorPosition(0, 1);
+		//					Console.Write(String.Format("Check PDF and Image Count : PDF Files ({0}) , PDF Pages ({1}), Image Files ({2})", pdf_file_count, pdf_page_count, jpg_file_count));
+		//				}
+		//				catch (Exception e)
+		//				{
+		//					//throw new Pdf2KTException("Error while opening PDF document.", e);
+		//				}
+		//			}
+		//			else if (image_format.Contains(file.Extension.ToLower()))
+		//			{
+		//				jpg_file_count++;
+		//				Console.SetCursorPosition(0, 1);
+		//				Console.Write(String.Format("Check PDF and Image Count : PDF Files ({0}) , PDF Pages ({1}), Image Files ({2})", pdf_file_count, pdf_page_count, jpg_file_count));
+		//			}
+		//		}
+		//	}
+		//}
 
 		static void FolderToPDF(string path)
 		{
@@ -161,6 +287,7 @@ namespace FolderToPDF
 					/*configure pdf-document to be compressed. */
 					pdf.SetCompressionMode(HPdfDoc.HPDF_COMP_ALL);
 
+					int current_page = 0;
 					foreach (FileInfo file in files)
 					{
 						if (image_format.Contains(file.Extension.ToLower()))
@@ -181,57 +308,63 @@ namespace FolderToPDF
 							//}
 							if (image != null)
 							{
-								Console.Write(">> OCR Processing...\n");
-
-								string json = DoOCR(file.FullName, file.Name, file.Extension.ToLower());
-								List<FieldData> test = GetFields(json);
-
-								HPdfPage page = pdf.AddPage();
-								page.SetWidth(image.GetWidth());
-								page.SetHeight(image.GetHeight());
-								int page_height = (int)image.GetHeight();
-
-								page.BeginText();
-								page.MoveTextPos(0, page_height);
-								//float current_pos_x = 0;
-								//float current_pos_y = 0;
-								for (int i = 0; i < test.Count; i++)
+								current_page++;
+								if (ocr_all || ocr_pages.Contains(current_page))
 								{
-									XFont font = new XFont("Arial", 40);
-									int minx = 0, miny = 0, maxx = 0, maxy = 0;
-									for (int j = 0; j < test[i].points.Count; j++)
+									ocr_processing_page_count++;
+									Console.Write(">> OCR Processing...\n");
+
+									string json = DoOCR(file.FullName, file.Name, file.Extension.ToLower());
+									List<FieldData> test = GetFields(json);
+
+									HPdfPage page = pdf.AddPage();
+									page.SetWidth(image.GetWidth());
+									page.SetHeight(image.GetHeight());
+									int page_height = (int)image.GetHeight();
+
+									page.BeginText();
+									page.MoveTextPos(0, page_height);
+									//float current_pos_x = 0;
+									//float current_pos_y = 0;
+									for (int i = 0; i < test.Count; i++)
 									{
-										if (j == 0)
+										XFont font = new XFont("Arial", 40);
+										int minx = 0, miny = 0, maxx = 0, maxy = 0;
+										for (int j = 0; j < test[i].points.Count; j++)
 										{
-											minx = (int)test[i].points[j].GetX();
-											maxx = (int)test[i].points[j].GetX();
-											miny = (int)test[i].points[j].GetY();
-											maxy = (int)test[i].points[j].GetY();
+											if (j == 0)
+											{
+												minx = (int)test[i].points[j].GetX();
+												maxx = (int)test[i].points[j].GetX();
+												miny = (int)test[i].points[j].GetY();
+												maxy = (int)test[i].points[j].GetY();
+											}
+											else
+											{
+												if (minx > (int)test[i].points[j].GetX()) minx = (int)test[i].points[j].GetX();
+												if (maxx < (int)test[i].points[j].GetX()) maxx = (int)test[i].points[j].GetX();
+												if (miny > (int)test[i].points[j].GetY()) miny = (int)test[i].points[j].GetY();
+												if (maxy < (int)test[i].points[j].GetY()) maxy = (int)test[i].points[j].GetY();
+											}
 										}
-										else
-										{
-											if (minx > (int)test[i].points[j].GetX()) minx = (int)test[i].points[j].GetX();
-											if (maxx < (int)test[i].points[j].GetX()) maxx = (int)test[i].points[j].GetX();
-											if (miny > (int)test[i].points[j].GetY()) miny = (int)test[i].points[j].GetY();
-											if (maxy < (int)test[i].points[j].GetY()) maxy = (int)test[i].points[j].GetY();
-										}
+										page.SetFontAndSize(kr_font, (maxy - miny) * 0.8f);
+										//page.MoveTextPos(minx - current_pos_x, - (maxy - current_pos_y));
+										//page.ShowText(test[i].text);
+
+										uint len = 0;
+										page.TextRect(minx, page_height - miny, maxx, page_height - maxy, test[i].text, HPdfTextAlignment.HPDF_TALIGN_CENTER, ref len);
+										//current_pos_x = minx;
+										//current_pos_y = maxy;
 									}
-									page.SetFontAndSize(kr_font, (maxy - miny) * 0.7f);
-									//page.MoveTextPos(minx - current_pos_x, - (maxy - current_pos_y));
-									//page.ShowText(test[i].text);
+									page.EndText();
 
-									uint len = 0;
-									page.TextRect(minx, page_height - miny, maxx, page_height - maxy, test[i].text, HPdfTextAlignment.HPDF_TALIGN_CENTER, ref len);
-									//current_pos_x = minx;
-									//current_pos_y = maxy;
+									page.DrawImage(image, 0, 0, image.GetWidth(), image.GetHeight());
 								}
-								page.EndText();
-
-								page.DrawImage(image, 0, 0, image.GetWidth(), image.GetHeight());
 							}
 						}
 					}
 					pdf.SaveToFile(path + ".pdf");
+					pdf_save_count++;
 
 				}
 				catch (Exception e)
