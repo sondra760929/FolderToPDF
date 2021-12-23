@@ -45,6 +45,8 @@ namespace FolderToPDF
         private static MailAddress toAddress = new MailAddress("ceo@docuscan.co.kr");
         private static string sendPassword = "jwfqpcndndqyanwj";
         static float size_ratio = 210.0f / 876.0f;
+
+        private static List<string> error_list = new List<string>();
         public static string ReadPassword(char mask)
         {
             const int ENTER = 13, BACKSP = 8, CTRLBACKSP = 127;
@@ -192,8 +194,25 @@ namespace FolderToPDF
                     mail_content = "OCR 처리 페이지 : " + ocr_processing_page_count.ToString() + "\n\n" + "PDF 생성 파일 개수 : " + pdf_save_count.ToString();
                     SendEMail(DateTime.Now.ToString("yyyy-MM-dd HHmmss") + " OCR to PDF 결과 리포트", mail_content);
 
-                    int code = Console.Read();
+                    if(error_list.Count > 0)
+                    {
+                        string path_error = args[0] + "/00000.오류/";
+                        DirectoryInfo d_ocr = new DirectoryInfo(path_error);
+                        if (d_ocr.Exists == false)
+                        {
+                            d_ocr.Create();
+                        }
 
+                        for(int i=0; i<error_list.Count; i++)
+                        {
+                            string path_error_dir = path_error + error_list[i];
+                            DirectoryInfo d_error = new DirectoryInfo(path_error_dir);
+                            if (d_error.Exists == false)
+                            {
+                                d_error.Create();
+                            }
+                        }
+                    }
                 }
                 //            Console.Write(String.Format("Check PDF and Image Count : PDF Files ({0}) , PDF Pages ({1}), Image Files ({2})", pdf_file_count, pdf_page_count, jpg_file_count));
                 //Console.Clear();
@@ -240,7 +259,6 @@ namespace FolderToPDF
                 if (message != null)
                     message.Dispose();
             }
-            return false;
         }
         static List<FieldData> GetFields(string json)
         {
@@ -587,175 +605,202 @@ namespace FolderToPDF
                     }
                     Console.Write(string.Format(" >> 이미지[{0}], OCR[{1}] 파일 선택\n", image_files.Count, ocr_files.Count));
 
-                    //	2. ocr 수행
-                    string path_ocr = path + "/ocr/";
-                    DirectoryInfo d_ocr = new DirectoryInfo(path_ocr);
-                    if (d_ocr.Exists == false)
+                    if (image_files.Count > 0)
                     {
-                        d_ocr.Create();
-                    }
-
-                    for (int i = 0; i < ocr_files.Count; i++)
-                    {
-                        string path_ocr_text = path_ocr + "/" + System.IO.Path.GetFileNameWithoutExtension(ocr_files[i].FullName) + ".txt";
-                        FileInfo fi_ocr = new FileInfo(path_ocr_text);
-                        Console.Write(">> OCR 수행 중 " + (i + 1).ToString() + " / " + ocr_files.Count.ToString() + " ");
-                        string json = "";
-                        if (fi_ocr.Exists)
+                        //	2. ocr 수행
+                        string error_string = "";
+                        int error_count = 0;
+                        int sucesses_count = 0;
+                        string path_ocr = path + "/ocr/";
+                        DirectoryInfo d_ocr = new DirectoryInfo(path_ocr);
+                        if (d_ocr.Exists == false)
                         {
-                            json = System.IO.File.ReadAllText(path_ocr_text);
-                        }
-                        else
-                        {
-                            ocr_processing_page_count++;
-                            json = DoOCR(ocr_files[i].FullName, ocr_files[i].Name, ocr_files[i].Extension.ToLower());
-                            System.IO.File.WriteAllText(path_ocr_text, json);
+                            d_ocr.Create();
                         }
 
-                        JObject root = JObject.Parse(json);
-                        if (root.Count > 0)
+                        for (int i = 0; i < ocr_files.Count; i++)
                         {
-                            JArray images = (JArray)root["images"];
-                            if (images != null && images.Count > 0)
+                            string path_ocr_text = path_ocr + "/" + System.IO.Path.GetFileNameWithoutExtension(ocr_files[i].FullName) + ".txt";
+                            FileInfo fi_ocr = new FileInfo(path_ocr_text);
+                            Console.Write(">> OCR 수행 중 " + (i + 1).ToString() + " / " + ocr_files.Count.ToString() + " ");
+                            string json = "";
+                            if (fi_ocr.Exists)
                             {
-                                JObject image = (JObject)images[0];
-                                if (image != null && image.Count > 0)
+                                json = System.IO.File.ReadAllText(path_ocr_text);
+                            }
+                            else
+                            {
+                                ocr_processing_page_count++;
+                                json = DoOCR(ocr_files[i].FullName, ocr_files[i].Name, ocr_files[i].Extension.ToLower());
+                                System.IO.File.WriteAllText(path_ocr_text, json);
+                            }
+
+                            JObject root = JObject.Parse(json);
+                            if (root.Count > 0)
+                            {
+                                JArray images = (JArray)root["images"];
+                                if (images != null && images.Count > 0)
                                 {
-                                    JValue inferResult = (JValue)image["inferResult"];
-                                    if (inferResult != null && inferResult.ToString() == "SUCCESS")
+                                    JObject image = (JObject)images[0];
+                                    if (image != null && image.Count > 0)
                                     {
-                                        Console.Write("SUCCESS\n");
-                                        continue;
+                                        JValue inferResult = (JValue)image["inferResult"];
+                                        if (inferResult != null && inferResult.ToString() == "SUCCESS")
+                                        {
+                                            sucesses_count++;
+                                            Console.Write("SUCCESS\n");
+                                            continue;
+                                        }
                                     }
                                 }
                             }
+                            error_count++;
+                            Console.Write("ERROR\n");
+                            error_string += ",";
+                            error_string += ocr_files[i].Name;
                         }
-                        Console.Write("ERROR\n");
-                    }
 
-                    HPdfDoc pdf = new HPdfDoc();
-                    pdf.UseKREncodings();
-                    pdf.UseKRFonts();
-                    HPdfFont kr_font = pdf.GetFont("Dotum", "KSC-EUC-H");
+                        HPdfDoc pdf = new HPdfDoc();
+                        pdf.UseKREncodings();
+                        pdf.UseKRFonts();
+                        HPdfFont kr_font = pdf.GetFont("Dotum", "KSC-EUC-H");
 
-                    /*configure pdf-document to be compressed. */
-                    pdf.SetCompressionMode(HPdfDoc.HPDF_COMP_ALL);
+                        /*configure pdf-document to be compressed. */
+                        pdf.SetCompressionMode(HPdfDoc.HPDF_COMP_ALL);
 
-                    string save_text_value = "";
-                    string save_text_line = "";
-                    string save_origin_text_value = "";
+                        string save_text_value = "";
+                        string save_text_line = "";
+                        string save_origin_text_value = "";
 
-                    int current_block = 0;
-                    for (current_page = 0; current_page < image_files.Count; current_page++)
-                    {
-                        HPdfImage image = null;
-                        if (image_files[current_page].Extension.ToLower() == ".jpg" || image_files[current_page].Extension.ToLower() == ".jpeg")
+                        int current_block = 0;
+                        for (current_page = 0; current_page < image_files.Count; current_page++)
                         {
-                            image = pdf.LoadJpegImageFromFile(image_files[current_page].FullName);
-                        }
-                        else if (image_files[current_page].Extension.ToLower() == ".png")
-                        {
-                            image = pdf.LoadPngImageFromFile(image_files[current_page].FullName);
-                        }
-                        if (image != null)
-                        {
-                            string path_ocr_text = path_ocr + "/" + System.IO.Path.GetFileNameWithoutExtension(image_files[current_page].FullName) + ".txt";
-                            FileInfo fi_ocr = new FileInfo(path_ocr_text);
-                            Console.Write(">> PDF 생성 중 " + (current_page + 1).ToString() + " / " + image_files.Count.ToString() + "\n");
-                            current_block = 0;
-                            bool is_save_end = true;
-                            uint image_width = (uint)GetValueWithRatio((int)image.GetWidth());
-                            uint image_heigth = (uint)GetValueWithRatio((int)image.GetHeight());
-                            if (fi_ocr.Exists)
+                            HPdfImage image = null;
+                            if (image_files[current_page].Extension.ToLower() == ".jpg" || image_files[current_page].Extension.ToLower() == ".jpeg")
                             {
-                                string json = System.IO.File.ReadAllText(path_ocr_text);
-                                List<FieldData> test = GetFields(json);
-
-                                HPdfPage page = pdf.AddPage();
-                                page.SetWidth(image_width);
-                                page.SetHeight(image_heigth);
-                                int page_height = (int)image_heigth;
-
-                                page.BeginText();
-                                page.MoveTextPos(0, page_height);
-                                float current_pos_x = 0;
-                                float current_pos_y = 0;
-                                for (int i = 0; i < test.Count; i++)
+                                image = pdf.LoadJpegImageFromFile(image_files[current_page].FullName);
+                            }
+                            else if (image_files[current_page].Extension.ToLower() == ".png")
+                            {
+                                image = pdf.LoadPngImageFromFile(image_files[current_page].FullName);
+                            }
+                            if (image != null)
+                            {
+                                string path_ocr_text = path_ocr + "/" + System.IO.Path.GetFileNameWithoutExtension(image_files[current_page].FullName) + ".txt";
+                                FileInfo fi_ocr = new FileInfo(path_ocr_text);
+                                Console.Write(">> PDF 생성 중 " + (current_page + 1).ToString() + " / " + image_files.Count.ToString() + "\n");
+                                current_block = 0;
+                                bool is_save_end = true;
+                                uint image_width = (uint)GetValueWithRatio((int)image.GetWidth());
+                                uint image_heigth = (uint)GetValueWithRatio((int)image.GetHeight());
+                                if (fi_ocr.Exists)
                                 {
-                                    XFont font = new XFont("Arial", 40);
-                                    float center_x = 0, center_y = 0;
-                                    for (int j = 0; j < test[i].points.Count; j++)
-                                    {
-                                        center_x += GetValueWithRatio(test[i].points[j].GetX());
-                                        center_y += GetValueWithRatio(test[i].points[j].GetY());
-                                    }
+                                    string json = System.IO.File.ReadAllText(path_ocr_text);
+                                    List<FieldData> test = GetFields(json);
 
-                                    center_x /= test[i].points.Count;
-                                    center_y /= test[i].points.Count;
-                                    float minx = center_x, miny = center_y, maxx = center_x, maxy = center_y;
+                                    HPdfPage page = pdf.AddPage();
+                                    page.SetWidth(image_width);
+                                    page.SetHeight(image_heigth);
+                                    int page_height = (int)image_heigth;
 
-                                    for (int j = 0; j < test[i].points.Count; j++)
+                                    page.BeginText();
+                                    page.MoveTextPos(0, page_height);
+                                    float current_pos_x = 0;
+                                    float current_pos_y = 0;
+                                    for (int i = 0; i < test.Count; i++)
                                     {
-                                        float px = GetValueWithRatio(test[i].points[j].GetX());
-                                        float py = GetValueWithRatio(test[i].points[j].GetY());
-                                        if (px < center_x && (minx == center_x || minx < px))
+                                        XFont font = new XFont("Arial", 40);
+                                        float center_x = 0, center_y = 0;
+                                        for (int j = 0; j < test[i].points.Count; j++)
                                         {
-                                            minx = px;
+                                            center_x += GetValueWithRatio(test[i].points[j].GetX());
+                                            center_y += GetValueWithRatio(test[i].points[j].GetY());
                                         }
-                                        else if (px > center_x && (maxx == center_x || maxx > px))
-                                        {
-                                            maxx = px;
-                                        }
-                                        if (py < center_y && (miny == center_y || miny < py))
-                                        {
-                                            miny = py;
-                                        }
-                                        else if (py > center_y && (maxy == center_y || maxy > py))
-                                        {
-                                            maxy = py;
-                                        }
-                                    }
 
-                                    float actual_font_size = (maxy - miny);
-                                    float font_ratio = 0.75f;
-                                    float prev_font_ratio = 0.75f;
-                                    float actual_width = maxx - minx;
-                                    float real_width = 0;
-                                    float real_width1 = 0;
-                                    bool is_ok = false;
-                                    while (is_ok == false)
-                                    {
-                                        page.SetFontAndSize(kr_font, actual_font_size * font_ratio);
-                                        page.MeasureText(test[i].text, actual_width, false, ref real_width);
-                                        real_width1 = page.TextWidth(test[i].text);
-                                        if (real_width > actual_width)
+                                        center_x /= test[i].points.Count;
+                                        center_y /= test[i].points.Count;
+                                        float minx = center_x, miny = center_y, maxx = center_x, maxy = center_y;
+
+                                        for (int j = 0; j < test[i].points.Count; j++)
                                         {
-                                            //	써보니 큼.
-                                            prev_font_ratio = font_ratio;
-                                            font_ratio -= 0.1f;
+                                            float px = GetValueWithRatio(test[i].points[j].GetX());
+                                            float py = GetValueWithRatio(test[i].points[j].GetY());
+                                            if (px < center_x && (minx == center_x || minx < px))
+                                            {
+                                                minx = px;
+                                            }
+                                            else if (px > center_x && (maxx == center_x || maxx > px))
+                                            {
+                                                maxx = px;
+                                            }
+                                            if (py < center_y && (miny == center_y || miny < py))
+                                            {
+                                                miny = py;
+                                            }
+                                            else if (py > center_y && (maxy == center_y || maxy > py))
+                                            {
+                                                maxy = py;
+                                            }
+                                        }
+
+                                        float actual_font_size = (maxy - miny);
+                                        float font_ratio = 0.75f;
+                                        float prev_font_ratio = 0.75f;
+                                        float actual_width = maxx - minx;
+                                        float real_width = 0;
+                                        float real_width1 = 0;
+                                        bool is_ok = false;
+                                        while (is_ok == false)
+                                        {
+                                            page.SetFontAndSize(kr_font, actual_font_size * font_ratio);
+                                            page.MeasureText(test[i].text, actual_width, false, ref real_width);
+                                            real_width1 = page.TextWidth(test[i].text);
+                                            if (real_width > actual_width)
+                                            {
+                                                //	써보니 큼.
+                                                prev_font_ratio = font_ratio;
+                                                font_ratio -= 0.1f;
+                                            }
+                                            else
+                                            {
+                                                is_ok = true;
+                                            }
+                                        }
+                                        float x_offset = (actual_width - real_width) / 2.0f;
+                                        float y_offset = (actual_font_size * (1.0f - font_ratio)) / 2.0f;
+                                        page.TextOut(minx + x_offset, page_height - maxy + y_offset, test[i].text);
+
+                                        current_pos_x = minx;
+                                        current_pos_y = maxy;
+
+                                        save_text_line += test[i].text;
+                                        save_text_line += " ";
+
+                                        save_origin_text_value += test[i].text;
+                                        save_origin_text_value += " ";
+
+                                        if (test[i].line_break)
+                                        {
+                                            save_text_line = save_text_line.Replace('\n', ' ');
+                                            save_text_value += save_text_line;
+                                            save_text_value += "\npage : ";
+                                            save_text_value += (current_page - 1).ToString();
+                                            save_text_value += ", block : ";
+                                            save_text_value += current_block.ToString();
+                                            save_text_value += "\n";
+                                            current_block++;
+                                            is_save_end = true;
+                                            save_text_line = "";
+                                            save_origin_text_value += "\n";
                                         }
                                         else
                                         {
-                                            is_ok = true;
+                                            is_save_end = false;
                                         }
                                     }
-                                    float x_offset = (actual_width - real_width) / 2.0f;
-                                    float y_offset = (actual_font_size * (1.0f - font_ratio)) / 2.0f;
-                                    page.TextOut(minx + x_offset, page_height - maxy + y_offset, test[i].text);
 
-                                    current_pos_x = minx;
-                                    current_pos_y = maxy;
-
-                                    save_text_line += test[i].text;
-                                    save_text_line += " ";
-
-                                    save_origin_text_value += test[i].text;
-                                    save_origin_text_value += " ";
-
-                                    if (test[i].line_break)
+                                    if (is_save_end == false)
                                     {
-                                        save_text_line = save_text_line.Replace('\n', ' ');
-                                        save_text_value += save_text_line;
                                         save_text_value += "\npage : ";
                                         save_text_value += (current_page - 1).ToString();
                                         save_text_value += ", block : ";
@@ -764,49 +809,41 @@ namespace FolderToPDF
                                         current_block++;
                                         is_save_end = true;
                                         save_text_line = "";
-                                        save_origin_text_value += "\n";
                                     }
-                                    else
-                                    {
-                                        is_save_end = false;
-                                    }
-                                }
+                                    page.EndText();
 
-                                if (is_save_end == false)
+                                    page.DrawImage(image, 0, 0, image_width, image_heigth);
+                                }
+                                else
                                 {
-                                    save_text_value += "\npage : ";
-                                    save_text_value += (current_page - 1).ToString();
-                                    save_text_value += ", block : ";
-                                    save_text_value += current_block.ToString();
-                                    save_text_value += "\n";
-                                    current_block++;
-                                    is_save_end = true;
-                                    save_text_line = "";
+                                    HPdfPage page = pdf.AddPage();
+                                    page.SetWidth(image_width);
+                                    page.SetHeight(image_heigth);
+                                    page.DrawImage(image, 0, 0, image_width, image_heigth);
                                 }
-                                page.EndText();
-
-                                page.DrawImage(image, 0, 0, image_width, image_heigth);
-                            }
-                            else
-                            {
-                                HPdfPage page = pdf.AddPage();
-                                page.SetWidth(image_width);
-                                page.SetHeight(image_heigth);
-                                page.DrawImage(image, 0, 0, image_width, image_heigth);
                             }
                         }
+                        pdf.SaveToFile(path + ".pdf");
+                        Console.Write(">> PDF 생성 완료 " + path + ".pdf\n");
+
+                        if (save_text_value != "")
+                            System.IO.File.WriteAllText(path + ".txt", save_text_value, Encoding.Default);
+
+                        if (save_text_value != "")
+                            System.IO.File.WriteAllText(path + "_origin.txt", save_origin_text_value, Encoding.Default);
+
+                        d_ocr = new DirectoryInfo(path_ocr);
+                        if (d_ocr.Exists)
+                        {
+                            d_ocr.Delete(true);
+                        }
+                        pdf_save_count++;
+
+                        if (error_count > 0)
+                        {
+                            error_list.Add(string.Format("{0} 성공[{1}],실패[{2}]{3}", d.Name, sucesses_count, error_count, error_string));
+                        }
                     }
-                    pdf.SaveToFile(path + ".pdf");
-                    Console.Write(">> PDF 생성 완료 " + path + ".pdf\n");
-
-                    if (save_text_value != "")
-                        System.IO.File.WriteAllText(path + ".txt", save_text_value, Encoding.Default);
-
-                    if (save_text_value != "")
-                        System.IO.File.WriteAllText(path + "_origin.txt", save_origin_text_value, Encoding.Default);
-
-                    pdf_save_count++;
-
                 }
                 catch (Exception e)
                 {
