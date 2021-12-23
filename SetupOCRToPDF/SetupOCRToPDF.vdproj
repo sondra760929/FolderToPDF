@@ -116,6 +116,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
             }
         }
         "Release"
@@ -418,15 +426,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OCRToPDF"
-        "ProductCode" = "8:{E04F30F9-EA39-4430-8E52-0CDBFAC9685C}"
-        "PackageCode" = "8:{C2D17EF2-78E4-4CBE-A495-46B193F09000}"
+        "ProductCode" = "8:{57A0BCB7-612D-4586-A476-17237690BDD1}"
+        "PackageCode" = "8:{90E21500-0888-4F3B-A52A-4C90D26B6132}"
         "UpgradeCode" = "8:{E42C4C22-1E14-41C3-B9F3-21566D95A71E}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
-        "RemovePreviousVersions" = "11:FALSE"
+        "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.0.0"
+        "ProductVersion" = "8:1.0.1"
         "Manufacturer" = "8:DIGIBOOK"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
