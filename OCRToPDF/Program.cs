@@ -784,7 +784,7 @@ namespace FolderToPDF
                                             save_text_line = save_text_line.Replace('\n', ' ');
                                             save_text_value += save_text_line;
                                             save_text_value += "\npage : ";
-                                            save_text_value += (current_page - 1).ToString();
+                                            save_text_value += current_page.ToString();
                                             save_text_value += ", block : ";
                                             save_text_value += current_block.ToString();
                                             save_text_value += "\n";
@@ -802,7 +802,7 @@ namespace FolderToPDF
                                     if (is_save_end == false)
                                     {
                                         save_text_value += "\npage : ";
-                                        save_text_value += (current_page - 1).ToString();
+                                        save_text_value += current_page.ToString();
                                         save_text_value += ", block : ";
                                         save_text_value += current_block.ToString();
                                         save_text_value += "\n";
