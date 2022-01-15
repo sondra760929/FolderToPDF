@@ -37,6 +37,16 @@ namespace FileMover
                         break;
                     case 5:
                         {
+                            FolderToFile(args[1], ".txt");
+                        }
+                        break;
+                    case 6:
+                        {
+                            FileToFolder(args[1], ".txt");
+                        }
+                        break;
+                    case 7:
+                        {
                             FileNameRemover(args[1]);
                         }
                         break;

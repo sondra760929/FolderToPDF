@@ -44,6 +44,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
             }
         }
         "Release"
@@ -258,6 +266,50 @@
                                                                     "Transitive" = "11:FALSE"
                                                                         "Keys"
                                                                         {
+                                                                            "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_191BB94DAA9B44F499FF86BFED7E746B"
+                                                                            {
+                                                                            "Name" = "8:DIGI_CMD7"
+                                                                            "Condition" = "8:"
+                                                                            "AlwaysCreate" = "11:TRUE"
+                                                                            "DeleteAtUninstall" = "11:FALSE"
+                                                                            "Transitive" = "11:FALSE"
+                                                                                "Keys"
+                                                                                {
+                                                                                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_2538D0E2A4B54C07B2AFDF2B380C6983"
+                                                                                    {
+                                                                                    "Name" = "8:command"
+                                                                                    "Condition" = "8:"
+                                                                                    "AlwaysCreate" = "11:FALSE"
+                                                                                    "DeleteAtUninstall" = "11:FALSE"
+                                                                                    "Transitive" = "11:FALSE"
+                                                                                        "Keys"
+                                                                                        {
+                                                                                        }
+                                                                                        "Values"
+                                                                                        {
+                                                                                            "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_D204F260B1934179BDB6110957E4F66F"
+                                                                                            {
+                                                                                            "Name" = "8:"
+                                                                                            "Condition" = "8:"
+                                                                                            "Transitive" = "11:FALSE"
+                                                                                            "ValueTypes" = "3:1"
+                                                                                            "Value" = "8:[TARGETDIR]FileMover.exe 7 \"%1\""
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                                "Values"
+                                                                                {
+                                                                                    "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_71F08AD0A2544F8FB38ED1F223CAE19C"
+                                                                                    {
+                                                                                    "Name" = "8:"
+                                                                                    "Condition" = "8:"
+                                                                                    "Transitive" = "11:FALSE"
+                                                                                    "ValueTypes" = "3:1"
+                                                                                    "Value" = "8:7. @삭제하기"
+                                                                                    }
+                                                                                }
+                                                                            }
                                                                             "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_91B801379194478E9D34579C42888B08"
                                                                             {
                                                                             "Name" = "8:DIGI_CMD4"
@@ -299,6 +351,50 @@
                                                                                     "Transitive" = "11:FALSE"
                                                                                     "ValueTypes" = "3:1"
                                                                                     "Value" = "8:4. JPG@Folder"
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                            "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_A88D09313AF649ABA6F5D275B01AF942"
+                                                                            {
+                                                                            "Name" = "8:DIGI_CMD6"
+                                                                            "Condition" = "8:"
+                                                                            "AlwaysCreate" = "11:TRUE"
+                                                                            "DeleteAtUninstall" = "11:FALSE"
+                                                                            "Transitive" = "11:FALSE"
+                                                                                "Keys"
+                                                                                {
+                                                                                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_257F6239DF884FA186B15EDBFA68993A"
+                                                                                    {
+                                                                                    "Name" = "8:command"
+                                                                                    "Condition" = "8:"
+                                                                                    "AlwaysCreate" = "11:TRUE"
+                                                                                    "DeleteAtUninstall" = "11:FALSE"
+                                                                                    "Transitive" = "11:FALSE"
+                                                                                        "Keys"
+                                                                                        {
+                                                                                        }
+                                                                                        "Values"
+                                                                                        {
+                                                                                            "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_BB3D31EE223E45A59535D5C11E738EBD"
+                                                                                            {
+                                                                                            "Name" = "8:"
+                                                                                            "Condition" = "8:"
+                                                                                            "Transitive" = "11:FALSE"
+                                                                                            "ValueTypes" = "3:1"
+                                                                                            "Value" = "8:[TARGETDIR]FileMover.exe 6 \"%1\""
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                                "Values"
+                                                                                {
+                                                                                    "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_4456A831B1824031BFD1698A2C1DEB36"
+                                                                                    {
+                                                                                    "Name" = "8:"
+                                                                                    "Condition" = "8:"
+                                                                                    "Transitive" = "11:FALSE"
+                                                                                    "ValueTypes" = "3:1"
+                                                                                    "Value" = "8:6. TXT@Folder"
                                                                                     }
                                                                                 }
                                                                             }
@@ -474,7 +570,7 @@
                                                                                     "Condition" = "8:"
                                                                                     "Transitive" = "11:FALSE"
                                                                                     "ValueTypes" = "3:1"
-                                                                                    "Value" = "8:5. @삭제하기"
+                                                                                    "Value" = "8:5. Folder@TXT"
                                                                                     }
                                                                                 }
                                                                             }
@@ -589,7 +685,7 @@
                                             "Condition" = "8:"
                                             "Transitive" = "11:FALSE"
                                             "ValueTypes" = "3:1"
-                                            "Value" = "8:DIGI_CMD1;DIGI_CMD2;DIGI_CMD3;DIGI_CMD4;DIGI_CMD5"
+                                            "Value" = "8:DIGI_CMD1;DIGI_CMD2;DIGI_CMD3;DIGI_CMD4;DIGI_CMD5;DIGI_CMD6;DIGI_CMD7"
                                             }
                                         }
                                     }
@@ -1024,7 +1120,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_A48AF1B985624A439652040F1EE0B56B"
             {
-            "SourcePath" = "8:..\\FileMover\\obj\\Release\\FileMover.exe"
+            "SourcePath" = "8:..\\FileMover\\obj\\x64\\Release\\FileMover.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_E02DE5AEC3AA4F34B39561D4F543F31B"
