@@ -573,6 +573,32 @@ namespace FolderToPDF
         //    }
         //}
 
+        static void page_TextOut(HPdfPage page, float page_height, HPdfFont kr_font, string text_out, float left, float right, float top, float bottom)
+        {
+            float actual_font_size = (bottom - top);
+            float font_ratio = 0.75f;
+            float actual_width = right - left;
+            float real_width = 0;
+            bool is_ok = false;
+            while (is_ok == false)
+            {
+                page.SetFontAndSize(kr_font, actual_font_size * font_ratio);
+                page.MeasureText(text_out, actual_width, false, ref real_width);
+                if (real_width > actual_width)
+                {
+                    //	써보니 큼.
+                    font_ratio -= 0.02f;
+                }
+                else
+                {
+                    is_ok = true;
+                }
+            }
+            float x_offset = (actual_width - real_width) / 2.0f;
+            float y_offset = (actual_font_size * (1.0f - font_ratio)) / 2.0f;
+            page.TextOut(left + x_offset, page_height - bottom + y_offset, text_out);
+        }
+
         static void FolderToPDF_Progressing(string path)
         {
             DirectoryInfo d = new DirectoryInfo(path);
@@ -705,8 +731,14 @@ namespace FolderToPDF
 
                                     page.BeginText();
                                     page.MoveTextPos(0, page_height);
-                                    float current_pos_x = 0;
-                                    float current_pos_y = 0;
+
+                                    float line_left = 0;
+                                    float line_right = 0;
+                                    float line_top = 0;
+                                    float line_bottom = 0;
+                                    float line_center = 0;
+                                    float line_height = 0;
+                                    string line_string = "";
                                     for (int i = 0; i < test.Count; i++)
                                     {
                                         XFont font = new XFont("Arial", 40);
@@ -743,35 +775,122 @@ namespace FolderToPDF
                                             }
                                         }
 
-                                        float actual_font_size = (maxy - miny);
-                                        float font_ratio = 0.75f;
-                                        float prev_font_ratio = 0.75f;
-                                        float actual_width = maxx - minx;
-                                        float real_width = 0;
-                                        float real_width1 = 0;
-                                        bool is_ok = false;
-                                        while (is_ok == false)
+                                        //  한 라인인지 판별하여 추가하는 부분
+                                        if(line_string == "")
                                         {
-                                            page.SetFontAndSize(kr_font, actual_font_size * font_ratio);
-                                            page.MeasureText(test[i].text, actual_width, false, ref real_width);
-                                            real_width1 = page.TextWidth(test[i].text);
-                                            if (real_width > actual_width)
+                                            line_left = minx;
+                                            line_right = maxx;
+                                            line_top = miny;
+                                            line_bottom = maxy;
+                                            line_center = center_y;
+                                            line_height = maxy - miny;
+                                            line_string = test[i].text;
+                                            //  라인이 끝나는 문자열이면 바로 출력
+                                            if (test[i].line_break)
                                             {
-                                                //	써보니 큼.
-                                                prev_font_ratio = font_ratio;
-                                                font_ratio -= 0.1f;
-                                            }
-                                            else
-                                            {
-                                                is_ok = true;
+                                                page_TextOut(page, page_height, kr_font, line_string, line_left, line_right, line_top, line_bottom);
+                                                line_left = 0;
+                                                line_right = 0;
+                                                line_top = 0;
+                                                line_bottom = 0;
+                                                line_center = 0;
+                                                line_height = 0;
+                                                line_string = "";
                                             }
                                         }
-                                        float x_offset = (actual_width - real_width) / 2.0f;
-                                        float y_offset = (actual_font_size * (1.0f - font_ratio)) / 2.0f;
-                                        page.TextOut(minx + x_offset, page_height - maxy + y_offset, test[i].text);
+                                        else
+                                        {
+                                            bool is_in_line = false;
+                                            float temp_line_height = maxy - miny;
+                                            float temp_line_center = center_y;
+                                            float height_offset = Math.Abs(line_height - temp_line_height);
+                                            float height_range = Math.Abs(line_height * 0.2f);
+                                            if(height_offset < height_range) // 문자열 높이와 라인 높이 차이가 20% 이내일때
+                                            {
+                                                float blank_width = minx - line_right;
+                                                if(blank_width < temp_line_height)  //  문자열 사이의 거리가 문자 높이보다 작을 때
+                                                {
+                                                    is_in_line = true;
+                                                    line_right = maxx;
+                                                    line_top = Math.Min(line_top, miny);
+                                                    line_bottom = Math.Max(line_bottom, maxy);
+                                                    line_center = (line_top + line_bottom) / 2.0f;
+                                                    line_string += " ";
+                                                    line_string += test[i].text;
 
-                                        current_pos_x = minx;
-                                        current_pos_y = maxy;
+                                                    //  라인이 끝나는 문자열이면 바로 출력
+                                                    if (test[i].line_break)
+                                                    {
+                                                        page_TextOut(page, page_height, kr_font, line_string, line_left, line_right, line_top, line_bottom);
+                                                        line_left = 0;
+                                                        line_right = 0;
+                                                        line_top = 0;
+                                                        line_bottom = 0;
+                                                        line_center = 0;
+                                                        line_height = 0;
+                                                        line_string = "";
+                                                    }
+                                                }
+                                            }
+
+                                            if(is_in_line == false) //  한 라인이 아닐 경우
+                                            {
+                                                //  지금까지 라인 출력
+                                                page_TextOut(page, page_height, kr_font, line_string, line_left, line_right, line_top, line_bottom);
+
+                                                //  새로운 라인 생성
+                                                line_left = minx;
+                                                line_right = maxx;
+                                                line_top = miny;
+                                                line_bottom = maxy;
+                                                line_center = center_y;
+                                                line_height = maxy - miny;
+                                                line_string = test[i].text;
+
+                                                //  라인이 끝나는 문자열이면 바로 출력
+                                                if (test[i].line_break)
+                                                {
+                                                    page_TextOut(page, page_height, kr_font, line_string, line_left, line_right, line_top, line_bottom);
+                                                    line_left = 0;
+                                                    line_right = 0;
+                                                    line_top = 0;
+                                                    line_bottom = 0;
+                                                    line_center = 0;
+                                                    line_height = 0;
+                                                    line_string = "";
+                                                }
+                                            }
+                                        }
+
+                                        //float actual_font_size = (maxy - miny);
+                                        //float font_ratio = 0.75f;
+                                        //float prev_font_ratio = 0.75f;
+                                        //float actual_width = maxx - minx;
+                                        //float real_width = 0;
+                                        //float real_width1 = 0;
+                                        //bool is_ok = false;
+                                        //while (is_ok == false)
+                                        //{
+                                        //    page.SetFontAndSize(kr_font, actual_font_size * font_ratio);
+                                        //    page.MeasureText(test[i].text, actual_width, false, ref real_width);
+                                        //    real_width1 = page.TextWidth(test[i].text);
+                                        //    if (real_width > actual_width)
+                                        //    {
+                                        //        //	써보니 큼.
+                                        //        prev_font_ratio = font_ratio;
+                                        //        font_ratio -= 0.1f;
+                                        //    }
+                                        //    else
+                                        //    {
+                                        //        is_ok = true;
+                                        //    }
+                                        //}
+                                        //float x_offset = (actual_width - real_width) / 2.0f;
+                                        //float y_offset = (actual_font_size * (1.0f - font_ratio)) / 2.0f;
+                                        //page.TextOut(minx + x_offset, page_height - maxy + y_offset, test[i].text);
+
+                                        //current_pos_x = minx;
+                                        //current_pos_y = maxy;
 
                                         save_text_line += test[i].text;
                                         save_text_line += " ";
@@ -797,6 +916,11 @@ namespace FolderToPDF
                                         {
                                             is_save_end = false;
                                         }
+                                    }
+
+                                    if(line_string != "")
+                                    {
+                                        page_TextOut(page, page_height, kr_font, line_string, line_left, line_right, line_top, line_bottom);
                                     }
 
                                     if (is_save_end == false)
