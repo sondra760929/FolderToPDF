@@ -109,7 +109,7 @@ namespace FolderToPDF
                     }
                 }
 
-                Console.Write(">> OCR To PDF Utility from DIGIBOOK 2021/11/11<<\n\n");
+                Console.Write(">> OCR To PDF Utility from DIGIBOOK 2022/02/18<<\n\n");
 
                 Console.Write("암호를 입력하세요. : ");
                 string input = ReadPassword();
@@ -704,11 +704,15 @@ namespace FolderToPDF
                             HPdfImage image = null;
                             if (image_files[current_page].Extension.ToLower() == ".jpg" || image_files[current_page].Extension.ToLower() == ".jpeg")
                             {
-                                image = pdf.LoadJpegImageFromFile(image_files[current_page].FullName);
+                                string new_file_path = current_page.ToString() + ".jpg";
+                                File.Copy(image_files[current_page].FullName, new_file_path, true);
+                                image = pdf.LoadJpegImageFromFile(new_file_path);
                             }
                             else if (image_files[current_page].Extension.ToLower() == ".png")
                             {
-                                image = pdf.LoadPngImageFromFile(image_files[current_page].FullName);
+                                string new_file_path = current_page.ToString() + ".png";
+                                File.Copy(image_files[current_page].FullName, new_file_path, true);
+                                image = pdf.LoadPngImageFromFile(new_file_path);
                             }
                             if (image != null)
                             {
@@ -947,7 +951,14 @@ namespace FolderToPDF
                                 }
                             }
                         }
-                        pdf.SaveToFile(path + ".pdf");
+
+                        if(File.Exists("output.pdf"))
+                        {
+                            File.Delete("output.pdf");
+                        }
+                        pdf.SaveToFile("output.pdf");
+                        File.Move("output.pdf", path + ".pdf");
+                        //pdf.SaveToFile(path + ".pdf");
                         Console.Write(">> PDF 생성 완료 " + path + ".pdf\n");
 
                         if (save_text_value != "")
