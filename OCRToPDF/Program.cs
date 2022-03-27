@@ -1159,6 +1159,7 @@ namespace FolderToPDF
                 }
             }
 
+            Thread.Sleep(1000); //  실행 후 1초 delay, 여러개 실행할 경우, 연속으로 기능 수행하지 않도록 해줌
             return responseText;
         }
         static byte[] GetImageBinary(string path)
