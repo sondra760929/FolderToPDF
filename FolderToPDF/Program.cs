@@ -28,7 +28,6 @@ namespace FolderToPDF
 				if (pdf_page_count != jpg_file_count)
 				{
 					Console.Write("PDF Page Count is not same as JPG File Count. ReRun PDFToFiles.\n");
-					int code = Console.Read();
 				}
 			}
 		}

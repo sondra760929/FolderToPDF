@@ -58,7 +58,7 @@ namespace EvenNumberMover
                 foreach (FileInfo file in files)
                 {
                     string file_name = file.Name;
-                    int index1 = file_name.IndexOf('@');
+                    int index1 = file_name.LastIndexOf('@');
                     file_name = file_name.Substring(index1 + 1);
                     index1 = file_name.IndexOf('.');
                     file_name = file_name.Remove(index1);

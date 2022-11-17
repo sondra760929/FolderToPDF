@@ -582,16 +582,23 @@ namespace FolderToPDF
             bool is_ok = false;
             while (is_ok == false)
             {
-                page.SetFontAndSize(kr_font, actual_font_size * font_ratio);
-                page.MeasureText(text_out, actual_width, false, ref real_width);
-                if (real_width > actual_width)
+                if (actual_font_size * font_ratio > 600)
                 {
-                    //	써보니 큼.
                     font_ratio -= 0.02f;
                 }
                 else
                 {
-                    is_ok = true;
+                    page.SetFontAndSize(kr_font, actual_font_size * font_ratio);
+                    page.MeasureText(text_out, actual_width, false, ref real_width);
+                    if (real_width > actual_width)
+                    {
+                        //	써보니 큼.
+                        font_ratio -= 0.02f;
+                    }
+                    else
+                    {
+                        is_ok = true;
+                    }
                 }
             }
             float x_offset = (actual_width - real_width) / 2.0f;

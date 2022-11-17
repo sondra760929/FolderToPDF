@@ -7,7 +7,7 @@
     <StartArguments>d:\샘플1</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <StartArguments>"C:\Users\sondr\Desktop\테스트"</StartArguments>
+    <StartArguments>"e:/temp/sondra76_gmail.com/주식차트 심리분석"</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <StartArguments>"C:\Users\sondr\Desktop\테스트"</StartArguments>
