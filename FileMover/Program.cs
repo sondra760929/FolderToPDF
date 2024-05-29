@@ -50,10 +50,90 @@ namespace FileMover
                             FileNameRemover(args[1]);
                         }
                         break;
+                    case 8:
+                        {
+                            FolderDown(args[1]);
+                        }
+                        break;
+                    case 9:
+                        {
+                            FolderUp(args[1]);
+                        }
+                        break;
                 }
             }
         }
 
+        static void FolderDown(string path)
+        {
+            DirectoryInfo d = new DirectoryInfo(path);
+
+            DirectoryInfo[] dirs = d.GetDirectories();
+            foreach (DirectoryInfo dir in dirs)
+            {
+                FolderDown(path, dir.Name, dir.FullName);
+            }
+        }
+        static void FolderDown(string target_path, string prev_str, string current_path)
+        {
+            DirectoryInfo d = new DirectoryInfo(current_path);
+
+            DirectoryInfo[] dirs = d.GetDirectories();
+            foreach (DirectoryInfo dir in dirs)
+            {
+                FolderDown(target_path, prev_str + "@" + dir.Name, dir.FullName);
+            }
+            FileInfo[] files = d.GetFiles();
+            if (files.Length > 0)
+            {
+                string new_path = target_path + "\\" + prev_str;
+                DirectoryInfo di = new DirectoryInfo(new_path);
+                if (di.Exists == false)
+                {
+                    di.Create();
+                }
+
+                foreach (FileInfo file in files)
+                {
+                    string destinationFile = target_path + "\\" + prev_str + "\\" + file.Name;
+                    System.IO.File.Move(file.FullName, destinationFile);
+                }
+            }
+        }
+        static void FolderUp(string path)
+        {
+            DirectoryInfo d = new DirectoryInfo(path);
+
+            DirectoryInfo[] dirs = d.GetDirectories();
+            foreach (DirectoryInfo dir in dirs)
+            {
+                string[] folders = dir.Name.Split('@');
+                if (folders.Length > 1)
+                {
+                    string new_path = path;
+                    for (int i = 0; i < folders.Length; i++)
+                    {
+                        new_path += ("\\" + folders[i]);
+                        DirectoryInfo di = new DirectoryInfo(new_path);
+                        if (di.Exists == false)
+                        {
+                            di.Create();
+                        }
+                    }
+
+                    FileInfo[] files = dir.GetFiles();
+                    if (files.Length > 0)
+                    {
+                        foreach (FileInfo file in files)
+                        {
+                            System.IO.File.Move(file.FullName, new_path + "\\" + file.Name);
+                        }
+                    }
+                }
+                FolderUp(dir.FullName);
+            }
+
+        }
         static void FolderToFile(string path, string ext)
         {
             DirectoryInfo d = new DirectoryInfo(path);

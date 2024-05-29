@@ -27,6 +27,15 @@ namespace FolderToPDF
         public string text;
         public bool line_break;
     }
+
+    class PrevOcrData
+    {
+        public float left;
+        public float right;
+        public float top;
+        public float bottom;
+        public string line;
+    }
     class Program
     {
         static string[] image_format = new string[] { ".jpg", ".jpeg", ".png", ".bmp" };
@@ -575,9 +584,9 @@ namespace FolderToPDF
 
         static void page_TextOut(HPdfPage page, float page_height, HPdfFont kr_font, string text_out, float left, float right, float top, float bottom)
         {
-            float actual_font_size = (bottom - top);
+            float actual_font_size = Math.Abs(bottom - top);
             float font_ratio = 0.75f;
-            float actual_width = right - left;
+            float actual_width = Math.Abs(right - left);
             float real_width = 0;
             bool is_ok = false;
             while (is_ok == false)
@@ -640,57 +649,94 @@ namespace FolderToPDF
 
                     if (image_files.Count > 0)
                     {
-                        //	2. ocr 수행
+                        string path_ocr = path + "/ocr/";
                         string error_string = "";
                         int error_count = 0;
                         int sucesses_count = 0;
-                        string path_ocr = path + "/ocr/";
-                        DirectoryInfo d_ocr = new DirectoryInfo(path_ocr);
-                        if (d_ocr.Exists == false)
+                        Dictionary<int, List<PrevOcrData>> prev_ocr_datas = new Dictionary<int, List<PrevOcrData>>();
+                        bool use_prev_ocr = false;
+                        string prev_ocr_file = path + ".txt";
+                        System.IO.FileInfo fi = new System.IO.FileInfo(prev_ocr_file);
+                        if (fi.Exists)
                         {
-                            d_ocr.Create();
-                        }
-
-                        for (int i = 0; i < ocr_files.Count; i++)
-                        {
-                            string path_ocr_text = path_ocr + "/" + System.IO.Path.GetFileNameWithoutExtension(ocr_files[i].FullName) + ".txt";
-                            FileInfo fi_ocr = new FileInfo(path_ocr_text);
-                            Console.Write(">> OCR 수행 중 " + (i + 1).ToString() + " / " + ocr_files.Count.ToString() + " ");
-                            string json = "";
-                            if (fi_ocr.Exists)
+                            use_prev_ocr = true;
+                            string[] lines = System.IO.File.ReadAllLines(prev_ocr_file, Encoding.Default);
+                            for(int i=0; i<lines.Length; i++)
                             {
-                                json = System.IO.File.ReadAllText(path_ocr_text);
-                            }
-                            else
-                            {
-                                ocr_processing_page_count++;
-                                json = DoOCR(ocr_files[i].FullName, ocr_files[i].Name, ocr_files[i].Extension.ToLower());
-                                System.IO.File.WriteAllText(path_ocr_text, json);
-                            }
-
-                            JObject root = JObject.Parse(json);
-                            if (root.Count > 0)
-                            {
-                                JArray images = (JArray)root["images"];
-                                if (images != null && images.Count > 0)
+                                string[] line_split = lines[i].Split(',');
+                                if(line_split.Length > 5)
                                 {
-                                    JObject image = (JObject)images[0];
-                                    if (image != null && image.Count > 0)
+                                    PrevOcrData prevOcrData = new PrevOcrData();
+                                    int page = int.Parse(line_split[0]);
+                                    prevOcrData.left = float.Parse(line_split[1]);
+                                    prevOcrData.right = float.Parse(line_split[2]);
+                                    prevOcrData.top = float.Parse(line_split[3]);
+                                    prevOcrData.bottom = float.Parse(line_split[4]);
+                                    prevOcrData.line = line_split[5];
+                                    for (int j=6; j< line_split.Length; j++)
                                     {
-                                        JValue inferResult = (JValue)image["inferResult"];
-                                        if (inferResult != null && inferResult.ToString() == "SUCCESS")
+                                        prevOcrData.line += ",";
+                                        prevOcrData.line += line_split[j];
+                                    }
+
+                                    if(!prev_ocr_datas.ContainsKey(page))
+                                    {
+                                        prev_ocr_datas.Add(page, new List<PrevOcrData>());
+                                    }
+                                    prev_ocr_datas[page].Add(prevOcrData);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            //	2. ocr 수행
+                            DirectoryInfo d_ocr1 = new DirectoryInfo(path_ocr);
+                            if (d_ocr1.Exists == false)
+                            {
+                                d_ocr1.Create();
+                            }
+
+                            for (int i = 0; i < ocr_files.Count; i++)
+                            {
+                                string path_ocr_text = path_ocr + "/" + System.IO.Path.GetFileNameWithoutExtension(ocr_files[i].FullName) + ".txt";
+                                FileInfo fi_ocr = new FileInfo(path_ocr_text);
+                                Console.Write(">> OCR 수행 중 " + (i + 1).ToString() + " / " + ocr_files.Count.ToString() + " ");
+                                string json = "";
+                                if (fi_ocr.Exists)
+                                {
+                                    json = System.IO.File.ReadAllText(path_ocr_text);
+                                }
+                                else
+                                {
+                                    ocr_processing_page_count++;
+                                    json = DoOCR(ocr_files[i].FullName, ocr_files[i].Name, ocr_files[i].Extension.ToLower());
+                                    System.IO.File.WriteAllText(path_ocr_text, json);
+                                }
+
+                                JObject root = JObject.Parse(json);
+                                if (root.Count > 0)
+                                {
+                                    JArray images = (JArray)root["images"];
+                                    if (images != null && images.Count > 0)
+                                    {
+                                        JObject image = (JObject)images[0];
+                                        if (image != null && image.Count > 0)
                                         {
-                                            sucesses_count++;
-                                            Console.Write("SUCCESS\n");
-                                            continue;
+                                            JValue inferResult = (JValue)image["inferResult"];
+                                            if (inferResult != null && inferResult.ToString() == "SUCCESS")
+                                            {
+                                                sucesses_count++;
+                                                Console.Write("SUCCESS\n");
+                                                continue;
+                                            }
                                         }
                                     }
                                 }
+                                error_count++;
+                                Console.Write("ERROR\n");
+                                error_string += ",";
+                                error_string += ocr_files[i].Name;
                             }
-                            error_count++;
-                            Console.Write("ERROR\n");
-                            error_string += ",";
-                            error_string += ocr_files[i].Name;
                         }
 
                         HPdfDoc pdf = new HPdfDoc();
@@ -705,6 +751,8 @@ namespace FolderToPDF
                         string save_text_line = "";
                         string save_origin_text_value = "";
 
+                        List<string> del_files_list = new List<string>();
+
                         int current_block = 0;
                         for (current_page = 0; current_page < image_files.Count; current_page++)
                         {
@@ -714,124 +762,205 @@ namespace FolderToPDF
                                 string new_file_path = current_page.ToString() + ".jpg";
                                 File.Copy(image_files[current_page].FullName, new_file_path, true);
                                 image = pdf.LoadJpegImageFromFile(new_file_path);
+                                del_files_list.Add(new_file_path);
                             }
                             else if (image_files[current_page].Extension.ToLower() == ".png")
                             {
                                 string new_file_path = current_page.ToString() + ".png";
                                 File.Copy(image_files[current_page].FullName, new_file_path, true);
                                 image = pdf.LoadPngImageFromFile(new_file_path);
+                                del_files_list.Add(new_file_path);
                             }
                             if (image != null)
                             {
-                                string path_ocr_text = path_ocr + "/" + System.IO.Path.GetFileNameWithoutExtension(image_files[current_page].FullName) + ".txt";
-                                FileInfo fi_ocr = new FileInfo(path_ocr_text);
-                                Console.Write(">> PDF 생성 중 " + (current_page + 1).ToString() + " / " + image_files.Count.ToString() + "\n");
-                                current_block = 0;
-                                bool is_save_end = true;
-                                uint image_width = (uint)GetValueWithRatio((int)image.GetWidth());
-                                uint image_heigth = (uint)GetValueWithRatio((int)image.GetHeight());
-                                if (fi_ocr.Exists)
+                                if (use_prev_ocr)
                                 {
-                                    string json = System.IO.File.ReadAllText(path_ocr_text);
-                                    List<FieldData> test = GetFields(json);
-
-                                    HPdfPage page = pdf.AddPage();
-                                    page.SetWidth(image_width);
-                                    page.SetHeight(image_heigth);
-                                    int page_height = (int)image_heigth;
-
-                                    page.BeginText();
-                                    page.MoveTextPos(0, page_height);
-
-                                    float line_left = 0;
-                                    float line_right = 0;
-                                    float line_top = 0;
-                                    float line_bottom = 0;
-                                    float line_center = 0;
-                                    float line_height = 0;
-                                    string line_string = "";
-                                    for (int i = 0; i < test.Count; i++)
+                                    Console.Write(">> PDF 생성 중 " + (current_page + 1).ToString() + " / " + image_files.Count.ToString() + "\n");
+                                    uint image_width = (uint)GetValueWithRatio((int)image.GetWidth());
+                                    uint image_heigth = (uint)GetValueWithRatio((int)image.GetHeight());
+                                    if (prev_ocr_datas.ContainsKey(current_page))
                                     {
-                                        XFont font = new XFont("Arial", 40);
-                                        float center_x = 0, center_y = 0;
-                                        for (int j = 0; j < test[i].points.Count; j++)
-                                        {
-                                            center_x += GetValueWithRatio(test[i].points[j].GetX());
-                                            center_y += GetValueWithRatio(test[i].points[j].GetY());
-                                        }
+                                        HPdfPage page = pdf.AddPage();
+                                        page.SetWidth(image_width);
+                                        page.SetHeight(image_heigth);
+                                        int page_height = (int)image_heigth;
 
-                                        center_x /= test[i].points.Count;
-                                        center_y /= test[i].points.Count;
-                                        float minx = center_x, miny = center_y, maxx = center_x, maxy = center_y;
+                                        page.BeginText();
+                                        page.MoveTextPos(0, page_height);
 
-                                        for (int j = 0; j < test[i].points.Count; j++)
+                                        for(int pod=0; pod < prev_ocr_datas[current_page].Count; pod++)
                                         {
-                                            float px = GetValueWithRatio(test[i].points[j].GetX());
-                                            float py = GetValueWithRatio(test[i].points[j].GetY());
-                                            if (px < center_x && (minx == center_x || minx < px))
-                                            {
-                                                minx = px;
-                                            }
-                                            else if (px > center_x && (maxx == center_x || maxx > px))
-                                            {
-                                                maxx = px;
-                                            }
-                                            if (py < center_y && (miny == center_y || miny < py))
-                                            {
-                                                miny = py;
-                                            }
-                                            else if (py > center_y && (maxy == center_y || maxy > py))
-                                            {
-                                                maxy = py;
-                                            }
-                                        }
+                                            Console.Write(prev_ocr_datas[current_page][pod].line + "\n");
 
-                                        //  한 라인인지 판별하여 추가하는 부분
-                                        if(line_string == "")
-                                        {
-                                            line_left = minx;
-                                            line_right = maxx;
-                                            line_top = miny;
-                                            line_bottom = maxy;
-                                            line_center = center_y;
-                                            line_height = maxy - miny;
-                                            line_string = test[i].text;
-                                            //  라인이 끝나는 문자열이면 바로 출력
-                                            if (test[i].line_break)
-                                            {
-                                                page_TextOut(page, page_height, kr_font, line_string, line_left, line_right, line_top, line_bottom);
-                                                line_left = 0;
-                                                line_right = 0;
-                                                line_top = 0;
-                                                line_bottom = 0;
-                                                line_center = 0;
-                                                line_height = 0;
-                                                line_string = "";
-                                            }
+                                            page_TextOut(page, page_height, kr_font,
+                                                prev_ocr_datas[current_page][pod].line,
+                                                prev_ocr_datas[current_page][pod].left,
+                                                prev_ocr_datas[current_page][pod].right,
+                                                prev_ocr_datas[current_page][pod].top,
+                                                prev_ocr_datas[current_page][pod].bottom);
                                         }
-                                        else
+                                        page.EndText();
+
+                                        page.DrawImage(image, 0, 0, image_width, image_heigth);
+                                    }
+                                    else
+                                    {
+                                        HPdfPage page = pdf.AddPage();
+                                        page.SetWidth(image_width);
+                                        page.SetHeight(image_heigth);
+                                        page.DrawImage(image, 0, 0, image_width, image_heigth);
+                                    }
+                                }
+                                else
+                                {
+                                    string path_ocr_text = path_ocr + "/" + System.IO.Path.GetFileNameWithoutExtension(image_files[current_page].FullName) + ".txt";
+                                    FileInfo fi_ocr = new FileInfo(path_ocr_text);
+                                    Console.Write(">> PDF 생성 중 " + (current_page + 1).ToString() + " / " + image_files.Count.ToString() + "\n");
+                                    current_block = 0;
+                                    bool is_save_end = true;
+                                    uint image_width = (uint)GetValueWithRatio((int)image.GetWidth());
+                                    uint image_heigth = (uint)GetValueWithRatio((int)image.GetHeight());
+                                    if (fi_ocr.Exists)
+                                    {
+                                        string json = System.IO.File.ReadAllText(path_ocr_text);
+                                        List<FieldData> test = GetFields(json);
+
+                                        HPdfPage page = pdf.AddPage();
+                                        page.SetWidth(image_width);
+                                        page.SetHeight(image_heigth);
+                                        int page_height = (int)image_heigth;
+
+                                        page.BeginText();
+                                        page.MoveTextPos(0, page_height);
+
+                                        float line_left = 0;
+                                        float line_right = 0;
+                                        float line_top = 0;
+                                        float line_bottom = 0;
+                                        float line_center = 0;
+                                        float line_height = 0;
+                                        string line_string = "";
+                                        for (int i = 0; i < test.Count; i++)
                                         {
-                                            bool is_in_line = false;
-                                            float temp_line_height = maxy - miny;
-                                            float temp_line_center = center_y;
-                                            float height_offset = Math.Abs(line_height - temp_line_height);
-                                            float height_range = Math.Abs(line_height * 0.2f);
-                                            if(height_offset < height_range) // 문자열 높이와 라인 높이 차이가 20% 이내일때
+                                            XFont font = new XFont("Arial", 40);
+                                            float center_x = 0, center_y = 0;
+                                            for (int j = 0; j < test[i].points.Count; j++)
                                             {
-                                                float blank_width = minx - line_right;
-                                                if(blank_width < temp_line_height)  //  문자열 사이의 거리가 문자 높이보다 작을 때
+                                                center_x += GetValueWithRatio(test[i].points[j].GetX());
+                                                center_y += GetValueWithRatio(test[i].points[j].GetY());
+                                            }
+
+                                            center_x /= test[i].points.Count;
+                                            center_y /= test[i].points.Count;
+                                            float minx = center_x, miny = center_y, maxx = center_x, maxy = center_y;
+
+                                            for (int j = 0; j < test[i].points.Count; j++)
+                                            {
+                                                float px = GetValueWithRatio(test[i].points[j].GetX());
+                                                float py = GetValueWithRatio(test[i].points[j].GetY());
+                                                if (px < center_x && (minx == center_x || minx < px))
                                                 {
-                                                    is_in_line = true;
+                                                    minx = px;
+                                                }
+                                                else if (px > center_x && (maxx == center_x || maxx > px))
+                                                {
+                                                    maxx = px;
+                                                }
+                                                if (py < center_y && (miny == center_y || miny < py))
+                                                {
+                                                    miny = py;
+                                                }
+                                                else if (py > center_y && (maxy == center_y || maxy > py))
+                                                {
+                                                    maxy = py;
+                                                }
+                                            }
+
+                                            //  한 라인인지 판별하여 추가하는 부분
+                                            if (line_string == "")
+                                            {
+                                                line_left = minx;
+                                                line_right = maxx;
+                                                line_top = miny;
+                                                line_bottom = maxy;
+                                                line_center = center_y;
+                                                line_height = maxy - miny;
+                                                line_string = test[i].text;
+                                                //  라인이 끝나는 문자열이면 바로 출력
+                                                if (test[i].line_break)
+                                                {
+                                                    save_text_value += string.Format("{0},{1},{2},{3},{4},{5}\n", current_page, line_left, line_right, line_top, line_bottom, line_string);
+
+                                                    page_TextOut(page, page_height, kr_font, line_string, line_left, line_right, line_top, line_bottom);
+                                                    line_left = 0;
+                                                    line_right = 0;
+                                                    line_top = 0;
+                                                    line_bottom = 0;
+                                                    line_center = 0;
+                                                    line_height = 0;
+                                                    line_string = "";
+                                                }
+                                            }
+                                            else
+                                            {
+                                                bool is_in_line = false;
+                                                float temp_line_height = maxy - miny;
+                                                float temp_line_center = center_y;
+                                                float height_offset = Math.Abs(line_height - temp_line_height);
+                                                float height_range = Math.Abs(line_height * 0.2f);
+                                                if (height_offset < height_range) // 문자열 높이와 라인 높이 차이가 20% 이내일때
+                                                {
+                                                    float blank_width = minx - line_right;
+                                                    if (blank_width < temp_line_height)  //  문자열 사이의 거리가 문자 높이보다 작을 때
+                                                    {
+                                                        is_in_line = true;
+                                                        line_right = maxx;
+                                                        line_top = Math.Min(line_top, miny);
+                                                        line_bottom = Math.Max(line_bottom, maxy);
+                                                        line_center = (line_top + line_bottom) / 2.0f;
+                                                        line_string += " ";
+                                                        line_string += test[i].text;
+
+                                                        //  라인이 끝나는 문자열이면 바로 출력
+                                                        if (test[i].line_break)
+                                                        {
+                                                            save_text_value += string.Format("{0},{1},{2},{3},{4},{5}\n", current_page, line_left, line_right, line_top, line_bottom, line_string);
+
+                                                            page_TextOut(page, page_height, kr_font, line_string, line_left, line_right, line_top, line_bottom);
+                                                            line_left = 0;
+                                                            line_right = 0;
+                                                            line_top = 0;
+                                                            line_bottom = 0;
+                                                            line_center = 0;
+                                                            line_height = 0;
+                                                            line_string = "";
+                                                        }
+                                                    }
+                                                }
+
+                                                if (is_in_line == false) //  한 라인이 아닐 경우
+                                                {
+                                                    //  지금까지 라인 출력
+                                                    save_text_value += string.Format("{0},{1},{2},{3},{4},{5}\n", current_page, line_left, line_right, line_top, line_bottom, line_string);
+
+                                                    page_TextOut(page, page_height, kr_font, line_string, line_left, line_right, line_top, line_bottom);
+
+                                                    //  새로운 라인 생성
+                                                    line_left = minx;
                                                     line_right = maxx;
-                                                    line_top = Math.Min(line_top, miny);
-                                                    line_bottom = Math.Max(line_bottom, maxy);
-                                                    line_center = (line_top + line_bottom) / 2.0f;
-                                                    line_string += " ";
-                                                    line_string += test[i].text;
+                                                    line_top = miny;
+                                                    line_bottom = maxy;
+                                                    line_center = center_y;
+                                                    line_height = maxy - miny;
+                                                    line_string = test[i].text;
 
                                                     //  라인이 끝나는 문자열이면 바로 출력
                                                     if (test[i].line_break)
                                                     {
+                                                        Console.Write(i.ToString() + "\n");
+
+                                                        save_text_value += string.Format("{0},{1},{2},{3},{4},{5}\n", current_page, line_left, line_right, line_top, line_bottom, line_string);
+
                                                         page_TextOut(page, page_height, kr_font, line_string, line_left, line_right, line_top, line_bottom);
                                                         line_left = 0;
                                                         line_right = 0;
@@ -844,117 +973,91 @@ namespace FolderToPDF
                                                 }
                                             }
 
-                                            if(is_in_line == false) //  한 라인이 아닐 경우
+                                            //float actual_font_size = (maxy - miny);
+                                            //float font_ratio = 0.75f;
+                                            //float prev_font_ratio = 0.75f;
+                                            //float actual_width = maxx - minx;
+                                            //float real_width = 0;
+                                            //float real_width1 = 0;
+                                            //bool is_ok = false;
+                                            //while (is_ok == false)
+                                            //{
+                                            //    page.SetFontAndSize(kr_font, actual_font_size * font_ratio);
+                                            //    page.MeasureText(test[i].text, actual_width, false, ref real_width);
+                                            //    real_width1 = page.TextWidth(test[i].text);
+                                            //    if (real_width > actual_width)
+                                            //    {
+                                            //        //	써보니 큼.
+                                            //        prev_font_ratio = font_ratio;
+                                            //        font_ratio -= 0.1f;
+                                            //    }
+                                            //    else
+                                            //    {
+                                            //        is_ok = true;
+                                            //    }
+                                            //}
+                                            //float x_offset = (actual_width - real_width) / 2.0f;
+                                            //float y_offset = (actual_font_size * (1.0f - font_ratio)) / 2.0f;
+                                            //page.TextOut(minx + x_offset, page_height - maxy + y_offset, test[i].text);
+
+                                            //current_pos_x = minx;
+                                            //current_pos_y = maxy;
+
+                                            save_text_line += test[i].text;
+                                            save_text_line += " ";
+
+                                            save_origin_text_value += test[i].text;
+                                            save_origin_text_value += " ";
+
+                                            if (test[i].line_break)
                                             {
-                                                //  지금까지 라인 출력
-                                                page_TextOut(page, page_height, kr_font, line_string, line_left, line_right, line_top, line_bottom);
-
-                                                //  새로운 라인 생성
-                                                line_left = minx;
-                                                line_right = maxx;
-                                                line_top = miny;
-                                                line_bottom = maxy;
-                                                line_center = center_y;
-                                                line_height = maxy - miny;
-                                                line_string = test[i].text;
-
-                                                //  라인이 끝나는 문자열이면 바로 출력
-                                                if (test[i].line_break)
-                                                {
-                                                    page_TextOut(page, page_height, kr_font, line_string, line_left, line_right, line_top, line_bottom);
-                                                    line_left = 0;
-                                                    line_right = 0;
-                                                    line_top = 0;
-                                                    line_bottom = 0;
-                                                    line_center = 0;
-                                                    line_height = 0;
-                                                    line_string = "";
-                                                }
+                                                save_text_line = save_text_line.Replace('\n', ' ');
+                                                //save_text_value += save_text_line;
+                                                //save_text_value += "\npage : ";
+                                                //save_text_value += current_page.ToString();
+                                                //save_text_value += ", block : ";
+                                                //save_text_value += current_block.ToString();
+                                                //save_text_value += "\n";
+                                                current_block++;
+                                                is_save_end = true;
+                                                save_text_line = "";
+                                                save_origin_text_value += "\n";
+                                            }
+                                            else
+                                            {
+                                                is_save_end = false;
                                             }
                                         }
 
-                                        //float actual_font_size = (maxy - miny);
-                                        //float font_ratio = 0.75f;
-                                        //float prev_font_ratio = 0.75f;
-                                        //float actual_width = maxx - minx;
-                                        //float real_width = 0;
-                                        //float real_width1 = 0;
-                                        //bool is_ok = false;
-                                        //while (is_ok == false)
-                                        //{
-                                        //    page.SetFontAndSize(kr_font, actual_font_size * font_ratio);
-                                        //    page.MeasureText(test[i].text, actual_width, false, ref real_width);
-                                        //    real_width1 = page.TextWidth(test[i].text);
-                                        //    if (real_width > actual_width)
-                                        //    {
-                                        //        //	써보니 큼.
-                                        //        prev_font_ratio = font_ratio;
-                                        //        font_ratio -= 0.1f;
-                                        //    }
-                                        //    else
-                                        //    {
-                                        //        is_ok = true;
-                                        //    }
-                                        //}
-                                        //float x_offset = (actual_width - real_width) / 2.0f;
-                                        //float y_offset = (actual_font_size * (1.0f - font_ratio)) / 2.0f;
-                                        //page.TextOut(minx + x_offset, page_height - maxy + y_offset, test[i].text);
-
-                                        //current_pos_x = minx;
-                                        //current_pos_y = maxy;
-
-                                        save_text_line += test[i].text;
-                                        save_text_line += " ";
-
-                                        save_origin_text_value += test[i].text;
-                                        save_origin_text_value += " ";
-
-                                        if (test[i].line_break)
+                                        if (line_string != "")
                                         {
-                                            save_text_line = save_text_line.Replace('\n', ' ');
-                                            save_text_value += save_text_line;
-                                            save_text_value += "\npage : ";
-                                            save_text_value += current_page.ToString();
-                                            save_text_value += ", block : ";
-                                            save_text_value += current_block.ToString();
-                                            save_text_value += "\n";
+                                            save_text_value += string.Format("{0},{1},{2},{3},{4},{5}\n", current_page, line_left, line_right, line_top, line_bottom, line_string);
+
+                                            page_TextOut(page, page_height, kr_font, line_string, line_left, line_right, line_top, line_bottom);
+                                        }
+
+                                        if (is_save_end == false)
+                                        {
+                                            //save_text_value += "\npage : ";
+                                            //save_text_value += current_page.ToString();
+                                            //save_text_value += ", block : ";
+                                            //save_text_value += current_block.ToString();
+                                            //save_text_value += "\n";
                                             current_block++;
                                             is_save_end = true;
                                             save_text_line = "";
-                                            save_origin_text_value += "\n";
                                         }
-                                        else
-                                        {
-                                            is_save_end = false;
-                                        }
-                                    }
+                                        page.EndText();
 
-                                    if(line_string != "")
+                                        page.DrawImage(image, 0, 0, image_width, image_heigth);
+                                    }
+                                    else
                                     {
-                                        page_TextOut(page, page_height, kr_font, line_string, line_left, line_right, line_top, line_bottom);
+                                        HPdfPage page = pdf.AddPage();
+                                        page.SetWidth(image_width);
+                                        page.SetHeight(image_heigth);
+                                        page.DrawImage(image, 0, 0, image_width, image_heigth);
                                     }
-
-                                    if (is_save_end == false)
-                                    {
-                                        save_text_value += "\npage : ";
-                                        save_text_value += current_page.ToString();
-                                        save_text_value += ", block : ";
-                                        save_text_value += current_block.ToString();
-                                        save_text_value += "\n";
-                                        current_block++;
-                                        is_save_end = true;
-                                        save_text_line = "";
-                                    }
-                                    page.EndText();
-
-                                    page.DrawImage(image, 0, 0, image_width, image_heigth);
-                                }
-                                else
-                                {
-                                    HPdfPage page = pdf.AddPage();
-                                    page.SetWidth(image_width);
-                                    page.SetHeight(image_heigth);
-                                    page.DrawImage(image, 0, 0, image_width, image_heigth);
                                 }
                             }
                         }
@@ -964,6 +1067,10 @@ namespace FolderToPDF
                             File.Delete("output.pdf");
                         }
                         pdf.SaveToFile("output.pdf");
+                        if (File.Exists(path + ".pdf"))
+                        {
+                            File.Delete(path + ".pdf");
+                        }
                         File.Move("output.pdf", path + ".pdf");
                         //pdf.SaveToFile(path + ".pdf");
                         Console.Write(">> PDF 생성 완료 " + path + ".pdf\n");
@@ -971,10 +1078,10 @@ namespace FolderToPDF
                         if (save_text_value != "")
                             System.IO.File.WriteAllText(path + ".txt", save_text_value, Encoding.Default);
 
-                        if (save_text_value != "")
+                        if (save_origin_text_value != "")
                             System.IO.File.WriteAllText(path + "_origin.txt", save_origin_text_value, Encoding.Default);
 
-                        d_ocr = new DirectoryInfo(path_ocr);
+                        DirectoryInfo d_ocr = new DirectoryInfo(path_ocr);
                         if (d_ocr.Exists)
                         {
                             d_ocr.Delete(true);
@@ -984,6 +1091,12 @@ namespace FolderToPDF
                         if (error_count > 0)
                         {
                             error_list.Add(string.Format("{0} 성공[{1}],실패[{2}]{3}", d.Name, sucesses_count, error_count, error_string));
+                        }
+
+                        for(int i=0; i< del_files_list.Count; i++)
+                        {
+                            if(File.Exists(del_files_list[i]))
+                                File.Delete(del_files_list[i]);
                         }
                     }
                 }
