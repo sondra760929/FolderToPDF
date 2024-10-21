@@ -47,6 +47,8 @@ namespace FolderToPDF
         static float size_ratio = 210.0f / 876.0f;
 
         private static List<string> error_list = new List<string>();
+
+        static bool use_table = false;
         public static string ReadPassword(char mask)
         {
             const int ENTER = 13, BACKSP = 8, CTRLBACKSP = 127;
@@ -121,6 +123,11 @@ namespace FolderToPDF
                     int code = Console.Read();
                     return;
                 }
+
+                Console.Write("표를 추출하시겠습니까? [y / n] : ");
+                input = Console.ReadLine().ToLower();
+                if (input == "y")
+                    use_table = true;
 
                 Console.Write("처리 방식을 선택하세요. [all / 1 / 1-15] : ");
                 input = Console.ReadLine();
@@ -1127,8 +1134,17 @@ namespace FolderToPDF
             string postData = "{\"version\": \"V2\"," +
                 "\"requestId\": \"" + guid + "\"," +
                 "\"timestamp\": " + UnixTimeNow().ToString() + "," +
-                "\"lang\": \"ko\"," +
+                "\"lang\": \"ko, ja, zh-TW\"," +
                 "\"images\": [{ \"format\": \"" + file_ext + "\", \"data\": \"" + Convert.ToBase64String(imageBinary) + "\", \"name\": \"" + file_name + "\"}]}";
+            if(use_table)
+            {
+                postData = "{\"version\": \"V2\"," +
+                "\"requestId\": \"" + guid + "\"," +
+                "\"timestamp\": " + UnixTimeNow().ToString() + "," +
+                "\"lang\": \"ko, ja, zh-TW\"," +
+                "\"images\": [{ \"format\": \"" + file_ext + "\", \"data\": \"" + Convert.ToBase64String(imageBinary) + "\", \"name\": \"" + file_name + "\"}]," +
+                "\"enableTableDetection\": true}";
+            }
             // 보낼 데이터를 byteArray로 바꿔준다. 
             byte[] byteArray = Encoding.UTF8.GetBytes(postData);
             // 요청 Data를 쓰는 데 사용할 Stream 개체를 가져온다. 
